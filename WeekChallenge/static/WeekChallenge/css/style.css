@@ -1,3 +1,32 @@
+html{
+    position: relative;
+    min-height: 100%;
+}
+
 body{
-    background-color: #c0c0c0;
+    background-color: #eeeeee;
+    margin-bottom: 200px;
+}
+
+[class*="col-"] {
+  padding-top: 15px;
+  padding-bottom: 15px;
+  background-color: #eee;
+  background-color: rgba(86,61,124,.15);
+  border: 1px solid #ddd;
+  margin-bottom: 1%;
+}
+
+.wrap{
+    margin-top: 80px;
+}
+
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 200px;
+  background-color: #ccc;
+  border-top: 1px solid #bbb;
+  padding-top: 20px;
 }
