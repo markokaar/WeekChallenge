@@ -44,3 +44,5 @@ class RegisterForm(forms.Form):
     inputPassword2 = forms.CharField(label='',
                                      widget=forms.PasswordInput(attrs={'class': 'form-control',
                                                                        'placeholder': 'Repeat password'}))
+
+

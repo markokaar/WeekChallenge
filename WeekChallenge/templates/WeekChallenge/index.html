@@ -25,17 +25,22 @@
                         <h1>Some challenge AND something more, hello!</h1>
                     </center>
                     <br>
+                    <i><div class="well">And some descr. And some descr. And some descr. And some descr. And some descr. And some descr.
                     And some descr. And some descr. And some descr. And some descr. And some descr. And some descr.
                     And some descr. And some descr. And some descr. And some descr. And some descr. And some descr.
-                    And some descr. And some descr. And some descr. And some descr. And some descr. And some descr.
-                    And some descr. And some descr. And some descr. And some descr.
+                    And some descr. And some descr. And some descr. And some descr.</div></i>
                 </div>
             </div>
 
             <div class="row">
-                <div class="col-md-12">
+                <div class="col-md-9">
                     <h4><b>0</b> users accepted this challenge.</h4>
                     <h4><b>0</b> active users. <small> - soon..</small></h4>
+                </div>
+                <div class="col-md-3">
+                    {% if user.is_authenticated %}
+                        <a href="#" class="btn btn-primary btn-lg">Accept this challenge!</a>
+                    {% endif %}
                 </div>
             </div>
 
@@ -63,7 +68,6 @@
                             and some asdoke mnif mkms mkkeia jxts asd s and some asdoke mnif mkms mkkeia jxts asd s
                             and some asdoke mnif mkms mkkeia jxts asd s and some asdoke mnif mkms mkkeia jxts asd s
                             and some asdoke mnif mkms mkkeia jxts asd s </p>
-
                 </div>
             </div>
 

@@ -1,0 +1,106 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    {% load staticfiles %}
+    <title>Week Challenge - Check challenges</title>
+
+    <link rel="stylesheet" type="text/css" href="{% static 'WeekChallenge/bootstrap/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'WeekChallenge/css/style.css' %}">
+
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+</head>
+<body>
+    {% include "WeekChallenge/base/navigation_bar.html" %}
+
+    <div class="wrap">
+        <div class="container">
+
+            <h3>Check challenges</h3>
+            <div class="row">
+
+                <div class="col-md-6">
+                    <h3>Need checking (random 10)</h3>
+                    <div class="panel panel-default">
+                        <table class="table">
+                            <tr><td><b>Title</b></td><td><b>User</b></td><td><b>State</b></td><td><b>Action</b></td></tr>
+                            {% for challenge in challenge_list %}
+                                <tr>
+                                    <td>{{ challenge }}</td>
+                                    <td>{{ challenge.username }}</td>
+                                    <td>{{ challenge.state }}</td>
+                                    <td>
+                                        <a href="/accept_challenge/{{ challenge.id }}">
+                                            <button class="btn btn-default">
+                                                <span class="glyphicon glyphicon-ok"></span>
+                                            </button>
+                                        </a>
+                                        <a href="/decline_challenge/{{ challenge.id }}">
+                                            <button class="btn btn-default">
+                                                <span class="glyphicon glyphicon-remove"></span>
+                                            </button>
+                                        </a>
+                                    </td>
+                                </tr>
+
+                            {% endfor %}
+                        </table>
+                    </div>
+                </div>
+
+
+                <div class="col-md-6">
+                    <h3>Accepted challenges (next 10)</h3>
+                    <div class="panel panel-default">
+                        <table class="table">
+                            <tr><td><b>Title</b></td><td><b>User</b></td><td><b>State</b></td><td><b>Action</b></td></tr>
+                            {% for accepted in accepted_list %}
+                                <tr>
+                                    <td>{{ accepted }}</td>
+                                    <td>{{ accepted.username }}</td>
+                                    <td>{{ accepted.state }}</td>
+                                    <td>
+                                        <a href="/decline_challenge/{{ accepted.id }}">
+                                            <button class="btn btn-default">
+                                                <span class="glyphicon glyphicon-remove"></span>
+                                            </button>
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+                </div>
+            </div> <!-- End of row (2 lists, both md-6) -->
+
+            <div class="row">
+                <div class="col-md-12">
+                    <h3>Challenge history</h3>
+
+                    <div class="panel panel-default">
+                        <table class="table">
+                            <tr><td><b>Title</b></td><td><b>User</b></td><td><b>State</b></td></tr>
+                            {% for history in history_list %}
+                                <tr>
+                                    <td>{{ history }}</td>
+                                    <td>{{ history.username }}</td>
+                                    <td>{{ history.state }}</td>
+
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+    {% include "WeekChallenge/base/foot.html" %}
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="{% static 'WeekChallenge/bootstrap/js/bootstrap.min.js' %}"></script>
+</body>
+</html>

@@ -1,3 +1,14 @@
 from django.db import models
 
-# Create your models here.
+
+class Challenge(models.Model):
+    title = models.CharField(max_length=150)
+    description = models.CharField(max_length=5000)
+    user_id = models.IntegerField(default=0)
+    username = models.CharField(max_length=75)
+    state = models.IntegerField(default=0)
+    accept_count = models.IntegerField(default=0)
+    date = models.DateTimeField('date added')
+
+    def __str__(self):
+        return self.title
