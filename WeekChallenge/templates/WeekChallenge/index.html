@@ -60,18 +60,25 @@
                 </div>
             </div>
 
-            <div class="row">
-                <div class="col-md-12">
-                    <center>
-                        <a href="/register" class="btn btn-primary btn-lg">Join now!</a>
 
-                        <br><br>
-                        <p>To recommend new challenges.</p>
-                        <p>To track your challenges.</p>
+            {% if user.is_authenticated %}
 
-                    </center>
+
+            {% else %}
+                <div class="row">
+                    <div class="col-md-12">
+                        <center>
+                            <a href="/register" class="btn btn-primary btn-lg">Join now!</a>
+
+                            <br><br>
+                            <p>To recommend new challenges.</p>
+                            <p>To track your challenges.</p>
+
+                        </center>
+                    </div>
                 </div>
-            </div>
+            {% endif %}
+
         </div>
     </div>
 
