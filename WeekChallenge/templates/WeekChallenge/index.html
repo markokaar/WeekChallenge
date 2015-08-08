@@ -1,7 +1,11 @@
 <!DOCTYPE HTML>
 <html>
 <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-COMPATIBLE" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     {% load staticfiles %}
+
     <title>Week Challenge</title>
 
     <link rel="stylesheet" type="text/css" href="{% static 'WeekChallenge/bootstrap/css/bootstrap.min.css' %}">
@@ -14,35 +18,59 @@
 
     <div class="wrap">
         <div class="container">
-            <div class="col-md-12">
-                <h3>This week challenge is..</h3>
-                <center>
-                    <h1>Some challenge!</h1>
-                </center>
-                <br>
-                And some descr. And some descr. And some descr. And some descr. And some descr. And some descr.
-                And some descr. And some descr. And some descr. And some descr. And some descr. And some descr.
-                And some descr. And some descr. And some descr. And some descr. And some descr. And some descr.
-                And some descr. And some descr. And some descr. And some descr.
+            <div class="row">
+                <div class="col-md-12">
+                    <h3>This week challenge is..</h3>
+                    <center>
+                        <h1>Some challenge AND something more, hello!</h1>
+                    </center>
+                    <br>
+                    And some descr. And some descr. And some descr. And some descr. And some descr. And some descr.
+                    And some descr. And some descr. And some descr. And some descr. And some descr. And some descr.
+                    And some descr. And some descr. And some descr. And some descr. And some descr. And some descr.
+                    And some descr. And some descr. And some descr. And some descr.
+                </div>
             </div>
 
-            <div class="col-md-4">
-                <center>
-                    <h3>Why?</h3>
-                    Make your life more interesting and memorable.
-                </center>
+            <div class="row">
+                <div class="col-md-4">
+                        <h3>Why?</h3>
+                        <p>Make your life more interesting and memorable. and some asdoke mnif mkms mkkeia jxts asd s
+                            and some asdoke mnif mkms mkkeia jxts asd s and some asdoke mnif mkms mkkeia jxts asd s
+                            and some asdoke mnif mkms mkkeia jxts asd s and some asdoke mnif mkms mkkeia jxts asd s
+                            and some asdoke mnif mkms mkkeia jxts asd s
+                        </p>
+
+                </div>
+                <div class="col-md-4">
+                       <h3>Who?</h3>
+                        <p>It's all about you! and some asdoke mnif mkms mkkeia jxts asd s
+                            and some asdoke mnif mkms mkkeia jxts asd s and some asdoke mnif mkms mkkeia jxts asd s
+                            and some asdoke mnif mkms mkkeia jxts asd s and some asdoke mnif mkms mkkeia jxts asd s
+                            and some asdoke mnif mkms mkkeia jxts asd s </p>
+
+                </div>
+                <div class="col-md-4">
+                        <h3>When?</h3>
+                        <p>New challenges every week! and some asdoke mnif mkms mkkeia jxts asd s
+                            and some asdoke mnif mkms mkkeia jxts asd s and some asdoke mnif mkms mkkeia jxts asd s
+                            and some asdoke mnif mkms mkkeia jxts asd s and some asdoke mnif mkms mkkeia jxts asd s
+                            and some asdoke mnif mkms mkkeia jxts asd s </p>
+
+                </div>
             </div>
-            <div class="col-md-4">
-                <center>
-                   <h3>Who?</h3>
-                    It's all about you!
-                </center>
-            </div>
-            <div class="col-md-4">
-                <center>
-                    <h3>When?</h3>
-                    New challenges every week!
-                </center>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <center>
+                        <a href="/register" class="btn btn-primary btn-lg">Join now!</a>
+
+                        <br><br>
+                        <p>To recommend new challenges.</p>
+                        <p>To track your challenges.</p>
+
+                    </center>
+                </div>
             </div>
         </div>
     </div>
@@ -52,6 +80,6 @@
 
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-    <script src="js/bootstrap.min.js"></script>
+    <script src="{% static 'WeekChallenge/bootstrap/js/bootstrap.min.js' %}"></script>
 </body>
 </html>
