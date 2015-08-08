@@ -54,7 +54,9 @@ def auth(request):
     else:
         print("The username and/or password were incorrect.")"""
 
-    user = authenticate(username='test1', password='0000')
+    username = request.POST['inputUsername']
+    password = request.POST['inputPassword']
+    user = authenticate(username=username, password=password)
     if user is not None:
         if user.is_active:
             login(request, user)
