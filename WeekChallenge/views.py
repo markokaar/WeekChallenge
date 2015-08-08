@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponseRedirect
+from .forms import LoginForm, RegisterForm
 
 
 def index(request):
@@ -26,11 +27,13 @@ def add(request):
 
 
 def register(request):
-    return render(request, 'WeekChallenge/register.html')
+    reg_form = RegisterForm()
+    return render(request, 'WeekChallenge/register.html', {'form': reg_form})
 
 
 def log_in(request):
-    return render(request, 'WeekChallenge/login.html')
+    log_form = LoginForm()
+    return render(request, 'WeekChallenge/login.html', {'form': log_form})
 
 
 def my_profile(request):
@@ -45,15 +48,6 @@ def create_user(request):
 
 
 def auth(request):
-    """user = authenticate(username='test1', password='0000')
-    if user is not None:
-        if user.is_active:
-            print("User is valid, active and authenticated")
-        else:
-            print("The password is valid, bute the account has been disabled")
-    else:
-        print("The username and/or password were incorrect.")"""
-
     username = request.POST['inputUsername']
     password = request.POST['inputPassword']
     user = authenticate(username=username, password=password)
@@ -68,7 +62,7 @@ def auth(request):
             return HttpResponseRedirect("/")
     else:
         print("auth: Wrong username and/or password!")
-        return HttpResponseRedirect("/")
+        return HttpResponseRedirect("/log_in/")
 
 
 def log_out(request):
