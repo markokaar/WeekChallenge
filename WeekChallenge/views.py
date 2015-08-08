@@ -41,9 +41,30 @@ def my_profile(request):
 
 
 def create_user(request):
-    user = User.objects.create_user('test4', 'test4@example.com', '0000')
-    user.last_name = 'perekon4'
+    username = request.POST['inputUsername']
+    email = request.POST['inputEmail']
+    password = request.POST['inputPassword']
+    firstname = request.POST['inputFirstName']
+    lastname = request.POST['inputLastName']
+    user = User.objects.create_user(username, email, password)
+    user.first_name = firstname
+    user.last_name = lastname
     user.save()
+
+    #Loging in
+    user = authenticate(username=username, password=password)
+    if user is not None:
+        if user.is_active:
+            login(request, user)
+
+            print("auth: Success! Logged in!")
+            return HttpResponseRedirect("/")
+        else:
+            print("auth: Disabled account!")
+            return HttpResponseRedirect("/")
+    else:
+        print("auth: Wrong username and/or password!")
+        return HttpResponseRedirect("/log_in/")
     return HttpResponseRedirect("/")
 
 
