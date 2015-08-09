@@ -28,23 +28,29 @@ def contact(request):
 
 
 def add(request):
-    add_form = AddForm()
-    return render(request, 'WeekChallenge/add.html', {'add_form': add_form})
+    if request.user.is_authenticated():
+        add_form = AddForm()
+        return render(request, 'WeekChallenge/add.html', {'add_form': add_form})
+    else:
+        return HttpResponseRedirect("/")
 
 
 def add_challenge(request):
-    title = request.POST['inputTitle']
-    description = request.POST['inputDescription']
-    # print(title, description, request.user, request.user.id)
+    if request.user.is_authenticated():
+        title = request.POST['inputTitle']
+        description = request.POST['inputDescription']
+        # print(title, description, request.user, request.user.id)
 
-    c = Challenge(title=title,
-                  description=description,
-                  username=request.user,
-                  date=timezone.now(),
-                  user_id=request.user.id)
-    c.save()
+        c = Challenge(title=title,
+                      description=description,
+                      username=request.user,
+                      date=timezone.now(),
+                      user_id=request.user.id)
+        c.save()
 
-    return HttpResponseRedirect("/add/")
+        return HttpResponseRedirect("/add/")
+    else:
+        return HttpResponseRedirect("/")
 
 
 def register(request):
@@ -53,90 +59,114 @@ def register(request):
 
 
 def log_in(request):
-    log_form = LoginForm()
-    return render(request, 'WeekChallenge/login.html', {'form': log_form})
+    if request.user.is_authenticated():
+        return HttpResponseRedirect("/")
+    else:
+        log_form = LoginForm()
+        return render(request, 'WeekChallenge/login.html', {'form': log_form})
 
 
 def my_profile(request):
-    return render(request, 'WeekChallenge/my_profile.html')
+    if request.user.is_authenticated():
+        return render(request, 'WeekChallenge/my_profile.html')
+    else:
+        return HttpResponseRedirect("/")
 
 
 def check_challenges(request):
-    challenge_list = Challenge.objects.filter(state=0)[:10]
-    accepted_list = Challenge.objects.filter(state=1)[:10]
-    this_week = Challenge.objects.filter(state=2)
-    history_list = Challenge.objects.filter(state=3)
+    if request.user.is_authenticated():
+        challenge_list = Challenge.objects.filter(state=0)[:10]
+        accepted_list = Challenge.objects.filter(state=1)[:10]
+        this_week = Challenge.objects.filter(state=2)
+        history_list = Challenge.objects.filter(state=3)
 
-    context = {'challenge_list': challenge_list,
-               'accepted_list': accepted_list,
-               'history_list': history_list,
-               'this_week': this_week
-               }
-    return render(request, 'WeekChallenge/check.html', context)
+        context = {'challenge_list': challenge_list,
+                   'accepted_list': accepted_list,
+                   'history_list': history_list,
+                   'this_week': this_week
+                   }
+        return render(request, 'WeekChallenge/check.html', context)
+    else:
+        return HttpResponseRedirect("/")
 
 
 def accept_challenge(request, challenge_id):
-    select_one = Challenge.objects.get(id=challenge_id)
-    select_one.state = 1
-    select_one.save()
+    if request.user.is_authenticated():
+        select_one = Challenge.objects.get(id=challenge_id)
+        select_one.state = 1
+        select_one.save()
 
-    return HttpResponseRedirect("/check/")
+        return HttpResponseRedirect("/check/")
+    else:
+        return HttpResponseRedirect("/")
 
 
 def decline_challenge(request, challenge_id):
-    select_one = Challenge.objects.get(id=challenge_id)
-    select_one.state = 4
-    select_one.save()
+    if request.user.is_authenticated():
+        select_one = Challenge.objects.get(id=challenge_id)
+        select_one.state = 4
+        select_one.save()
 
-    return HttpResponseRedirect("/check/")
+        return HttpResponseRedirect("/check/")
+    else:
+        return HttpResponseRedirect("/")
 
 
 def create_user(request):
-    username = request.POST['inputUsername']
-    email = request.POST['inputEmail']
-    password = request.POST['inputPassword']
-    firstname = request.POST['inputFirstName']
-    lastname = request.POST['inputLastName']
+    if request.user.is_authenticated():
+        username = request.POST['inputUsername']
+        email = request.POST['inputEmail']
+        password = request.POST['inputPassword']
+        firstname = request.POST['inputFirstName']
+        lastname = request.POST['inputLastName']
 
-    user = User.objects.create_user(username, email, password)
-    user.first_name = firstname
-    user.last_name = lastname
-    user.save()
+        user = User.objects.create_user(username, email, password)
+        user.first_name = firstname
+        user.last_name = lastname
+        user.save()
 
-    # Loging in
-    user = authenticate(username=username, password=password)
-    if user is not None:
-        if user.is_active:
-            login(request, user)
+        # Loging in
+        user = authenticate(username=username, password=password)
+        if user is not None:
+            if user.is_active:
+                login(request, user)
 
-            # print("auth: Success! Logged in!")
-            return HttpResponseRedirect("/")
+                # print("auth: Success! Logged in!")
+                return HttpResponseRedirect("/")
+            else:
+                # print("auth: Disabled account!")
+                return HttpResponseRedirect("/")
         else:
-            # print("auth: Disabled account!")
-            return HttpResponseRedirect("/")
+            # print("auth: Wrong username and/or password!")
+            return HttpResponseRedirect("/log_in/")
     else:
-        # print("auth: Wrong username and/or password!")
-        return HttpResponseRedirect("/log_in/")
+        return HttpResponseRedirect("/")
 
 
 def auth(request):
-    username = request.POST['inputUsername']
-    password = request.POST['inputPassword']
-    user = authenticate(username=username, password=password)
-    if user is not None:
-        if user.is_active:
-            login(request, user)
-
-            # print("auth: Success! Logged in!")
-            return HttpResponseRedirect("/")
-        else:
-            # print("auth: Disabled account!")
-            return HttpResponseRedirect("/")
+    if request.user.is_authenticated():
+        return HttpResponseRedirect("/")
     else:
-        # print("auth: Wrong username and/or password!")
-        return HttpResponseRedirect("/log_in/")
+        username = request.POST['inputUsername']
+        password = request.POST['inputPassword']
+        user = authenticate(username=username, password=password)
+        if user is not None:
+            if user.is_active:
+                login(request, user)
+
+                # print("auth: Success! Logged in!")
+                return HttpResponseRedirect("/")
+            else:
+                # print("auth: Disabled account!")
+                return HttpResponseRedirect("/")
+        else:
+            # print("auth: Wrong username and/or password!")
+            return HttpResponseRedirect("/log_in/")
 
 
 def log_out(request):
-    logout(request)
-    return HttpResponseRedirect("/")
+    if request.user.is_authenticated():
+        logout(request)
+        return HttpResponseRedirect("/")
+    else:
+        return HttpResponseRedirect("/")
