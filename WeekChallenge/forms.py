@@ -46,3 +46,16 @@ class RegisterForm(forms.Form):
                                                                        'placeholder': 'Repeat password'}))
 
 
+class AddForm(forms.Form):
+    inputTitle = forms.CharField(label='',
+                                 max_length=150,
+                                 required=True,
+                                 widget=forms.TextInput(attrs={'class': 'form-control',
+                                                               'placeholder': 'Challenge title/name'})
+                                 )
+    inputDescription = forms.CharField(label='',
+                                       max_length=5000,
+                                       required=True,
+                                       widget=forms.Textarea(attrs={'class': 'form-control',
+                                                                    'placeholder': 'Challenge description'}),
+                                       )

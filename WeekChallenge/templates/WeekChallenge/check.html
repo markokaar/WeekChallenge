@@ -15,7 +15,33 @@
     <div class="wrap">
         <div class="container">
 
-            <h3>Check challenges</h3>
+            <h1>Check challenges</h1>
+            <div class="row">
+                <div class="col-md-12">
+                <h3>This week</h3>
+                    <div class="panel panel-default">
+                        <table class="table">
+                            <tr><td><b>Title</b></td><td><b>User</b></td><td><b>State</b></td><td><b>Date</b></td><td><b>Delete</b></td></tr>
+                            {% for this in this_week %}
+                                <tr>
+                                    <td>{{ this }}</td>
+                                    <td>{{ this.username }}</td>
+                                    <td>{{ this.state }}</td>
+                                    <td>{{ this.date }}</td>
+                                    <td>
+                                        <a href="/decline_challenge/{{ accepted.id }}">
+                                            <button class="btn btn-default">
+                                                <span class="glyphicon glyphicon-remove"></span>
+                                            </button>
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+                </div>
+            </div>
+
             <div class="row">
 
                 <div class="col-md-6">

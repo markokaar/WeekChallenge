@@ -2,8 +2,9 @@ from django.shortcuts import render
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponseRedirect
-from .forms import LoginForm, RegisterForm
+from .forms import LoginForm, RegisterForm, AddForm
 from .models import Challenge
+from django.utils import timezone
 
 
 def index(request):
@@ -12,7 +13,10 @@ def index(request):
     else:
         print("index: Kasutaja EI OLE sisse logitud!") """
 
-    return render(request, 'WeekChallenge/index.html')
+    select_challenge = Challenge.objects.filter(state=2)[:1]
+    context = {'select_challenge': select_challenge}
+
+    return render(request, 'WeekChallenge/index.html', context)
 
 
 def about(request):
@@ -24,7 +28,23 @@ def contact(request):
 
 
 def add(request):
-    return render(request, 'WeekChallenge/add.html')
+    add_form = AddForm()
+    return render(request, 'WeekChallenge/add.html', {'add_form': add_form})
+
+
+def add_challenge(request):
+    title = request.POST['inputTitle']
+    description = request.POST['inputDescription']
+    # print(title, description, request.user, request.user.id)
+
+    c = Challenge(title=title,
+                  description=description,
+                  username=request.user,
+                  date=timezone.now(),
+                  user_id=request.user.id)
+    c.save()
+
+    return HttpResponseRedirect("/add/")
 
 
 def register(request):
@@ -44,11 +64,13 @@ def my_profile(request):
 def check_challenges(request):
     challenge_list = Challenge.objects.filter(state=0)[:10]
     accepted_list = Challenge.objects.filter(state=1)[:10]
+    this_week = Challenge.objects.filter(state=2)
     history_list = Challenge.objects.filter(state=3)
 
     context = {'challenge_list': challenge_list,
                'accepted_list': accepted_list,
-               'history_list': history_list
+               'history_list': history_list,
+               'this_week': this_week
                }
     return render(request, 'WeekChallenge/check.html', context)
 
