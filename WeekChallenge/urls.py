@@ -15,5 +15,6 @@ urlpatterns = [
     url(r'^check/', views.check_challenges, name='check_challenges'),
     url(r'^accept_challenge/(?P<challenge_id>[0-9]+)/$', views.accept_challenge, name='accept_challenge'),
     url(r'^decline_challenge/(?P<challenge_id>[0-9]+)/$', views.decline_challenge, name='decline_challenge'),
+    url(r'^up_challenge/(?P<challenge_id>[0-9]+)/$', views.up_challenge, name='up_challenge'),
     url(r'^add_challenge/', views.add_challenge, name='add_challenge'),
 ]

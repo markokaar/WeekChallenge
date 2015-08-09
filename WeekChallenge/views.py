@@ -93,6 +93,26 @@ def check_challenges(request):
         return HttpResponseRedirect("/")
 
 
+def up_challenge(request, challenge_id):
+    if request.user.is_authenticated():
+        if request.user.is_staff:
+            # Take old challenge down
+            old_challenge = Challenge.objects.get(state=2)
+            old_challenge.state = 3
+            old_challenge.save()
+
+            # Upload new challenge
+            new_challenge = Challenge.objects.get(id=challenge_id)
+            new_challenge.state = 2
+            new_challenge.save()
+
+            return HttpResponseRedirect("/check/")
+        else:
+            return HttpResponseRedirect("/")
+    else:
+        return HttpResponseRedirect("/")
+
+
 def accept_challenge(request, challenge_id):
     if request.user.is_authenticated():
         if request.user.is_staff:
