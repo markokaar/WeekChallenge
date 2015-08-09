@@ -75,39 +75,48 @@ def my_profile(request):
 
 def check_challenges(request):
     if request.user.is_authenticated():
-        challenge_list = Challenge.objects.filter(state=0)[:10]
-        accepted_list = Challenge.objects.filter(state=1)[:10]
-        this_week = Challenge.objects.filter(state=2)
-        history_list = Challenge.objects.filter(state=3)
+        if request.user.is_staff:
+            challenge_list = Challenge.objects.filter(state=0)[:10]
+            accepted_list = Challenge.objects.filter(state=1)[:10]
+            this_week = Challenge.objects.filter(state=2)
+            history_list = Challenge.objects.filter(state=3)
 
-        context = {'challenge_list': challenge_list,
-                   'accepted_list': accepted_list,
-                   'history_list': history_list,
-                   'this_week': this_week
-                   }
-        return render(request, 'WeekChallenge/check.html', context)
+            context = {'challenge_list': challenge_list,
+                       'accepted_list': accepted_list,
+                       'history_list': history_list,
+                       'this_week': this_week
+                       }
+            return render(request, 'WeekChallenge/check.html', context)
+        else:
+            return HttpResponseRedirect("/")
     else:
         return HttpResponseRedirect("/")
 
 
 def accept_challenge(request, challenge_id):
     if request.user.is_authenticated():
-        select_one = Challenge.objects.get(id=challenge_id)
-        select_one.state = 1
-        select_one.save()
+        if request.user.is_staff:
+            select_one = Challenge.objects.get(id=challenge_id)
+            select_one.state = 1
+            select_one.save()
 
-        return HttpResponseRedirect("/check/")
+            return HttpResponseRedirect("/check/")
+        else:
+            return HttpResponseRedirect("/")
     else:
         return HttpResponseRedirect("/")
 
 
 def decline_challenge(request, challenge_id):
     if request.user.is_authenticated():
-        select_one = Challenge.objects.get(id=challenge_id)
-        select_one.state = 4
-        select_one.save()
+        if request.user.is_staff:
+            select_one = Challenge.objects.get(id=challenge_id)
+            select_one.state = 4
+            select_one.save()
 
-        return HttpResponseRedirect("/check/")
+            return HttpResponseRedirect("/check/")
+        else:
+            return HttpResponseRedirect("/")
     else:
         return HttpResponseRedirect("/")
 
