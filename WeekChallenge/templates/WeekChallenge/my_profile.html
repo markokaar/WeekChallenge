@@ -1,6 +1,9 @@
 <!DOCTYPE HTML>
 <html>
 <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-COMPATIBLE" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     {% load staticfiles %}
     <title>Week Challenges - {{ user.username }}'s profile</title>
 
@@ -26,8 +29,8 @@
                     <table border="0">
                         <h3>User</h3>
                         <tr><td><b>Username:</b></td><td>{{ user.username }}</td></tr>
-                        <tr><td><b>First name:</b></td><td>{{ user.first_name }}</td></tr>
-                        <tr><td><b>Last name:</b></td><td>{{ user.last_name }}</td></tr>
+                        <tr><td><b>First&nbsp;name:</b></td><td>{{ user.first_name }}</td></tr>
+                        <tr><td><b>Last&nbsp;name:</b></td><td>{{ user.last_name }}</td></tr>
                         <tr><td><b>Email:</b></td><td>{{ user.email }}</td></tr>
                     </table>
 
@@ -44,7 +47,7 @@
                     <!-- <img class="img-thumbnail" src="#" alt="" width="150px" height="200px"> -->
                 </div>
                 <div class="col-md-8 col-sm-12 col-xs-12">
-                    <h3>Completed challenges</h3>
+                    <h3>Completed challenges <small>-soon</small></h3>
                     1. asd kofrekwof mkd ea nj<br>
                     2. fima oke mk ofwekm mkda<br>
                     3. fokfs kofremke mkpo<br>
