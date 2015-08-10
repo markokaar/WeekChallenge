@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponseRedirect
 from .forms import LoginForm, RegisterForm, AddForm
-from .models import Challenge
+from .models import Challenge, UserChallenge
 from django.utils import timezone
 
 
@@ -13,9 +13,16 @@ def index(request):
     else:
         print("index: Kasutaja EI OLE sisse logitud!") """
 
-    select_challenge = Challenge.objects.filter(state=2)[:1]
-    context = {'select_challenge': select_challenge}
+    select_challenge = Challenge.objects.get(state=2)
+    chid = select_challenge.id
 
+    # Active challenge accepting check
+    if UserChallenge.objects.filter(challenge_id=chid, user_id=request.user.id):
+        is_accepted = True
+    else:
+        is_accepted = False
+
+    context = {'c': select_challenge, 'is_accepted': is_accepted}
     return render(request, 'WeekChallenge/index.html', context)
 
 
@@ -69,10 +76,31 @@ def log_in(request):
 def profile(request, user_name):
     if request.user.is_authenticated():
         user_name = User.objects.get(username=user_name)
+        ch = Challenge.objects.filter(user_id=request.user.id)
 
-        print(user_name.email)
+        return render(request, 'WeekChallenge/profile.html', {'user_name': user_name, 'ch': ch})
+    else:
+        return HttpResponseRedirect("/")
 
-        return render(request, 'WeekChallenge/profile.html', {'user_name': user_name})
+
+def user_accept_challenge(request):
+    if request.user.is_authenticated():
+        week_challenge = Challenge.objects.get(state=2)
+        chid = week_challenge.id
+
+        # If already accepted
+        if not UserChallenge.objects.filter(challenge_id=chid, user_id=request.user.id):
+            week_challenge.accept_count += 1
+            week_challenge.save()
+
+            c = UserChallenge(user_id=request.user.id,
+                          challenge_id=week_challenge.id,
+                          date=timezone.now())
+            c.save()
+
+            return HttpResponseRedirect("/")
+        else:
+            return HttpResponseRedirect("/")
     else:
         return HttpResponseRedirect("/")
 

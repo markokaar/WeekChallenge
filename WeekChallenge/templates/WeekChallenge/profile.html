@@ -31,7 +31,7 @@
             <div class="row">
                 <div class="col-md-2 col-sm-6 col-xs-6">
                     <table border="0">
-                        <h3>User - {{ user_name }}</h3>
+                        <h3>User&nbsp;information</h3>
                         <tr><td><b>Username:</b></td><td>{{ user_name.username }}</td></tr>
                         <tr><td><b>First&nbsp;name:</b></td><td>{{ user_name.first_name }}</td></tr>
                         <tr><td><b>Last&nbsp;name:</b></td><td>{{ user_name.last_name }}</td></tr>
@@ -51,13 +51,20 @@
                     <!-- <img class="img-thumbnail" src="#" alt="" width="150px" height="200px"> -->
                 </div>
                 <div class="col-md-8 col-sm-12 col-xs-12">
-                    <h3>Completed challenges <small>-soon</small></h3>
-                    1. asd kofrekwof mkd ea nj<br>
-                    2. fima oke mk ofwekm mkda<br>
-                    3. fokfs kofremke mkpo<br>
-                </div>
+                    <h3>Accepted challenges</h3>
+                    <div class="panel panel-default">
+                            <table class="table">
+                                <tr><td><b>Title</b></td><td><b>Challenge date</b></td></tr>
+                                {% for c in ch %}
+                                    <tr>
+                                        <td>{{ c.title }}</td>
+                                        <td>{{ c.date }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </table>
+                        </div>
+                    </div>
             </div>
-
         </div>
     </div>
 
