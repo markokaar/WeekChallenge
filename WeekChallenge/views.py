@@ -66,9 +66,13 @@ def log_in(request):
         return render(request, 'WeekChallenge/login.html', {'form': log_form})
 
 
-def my_profile(request):
+def profile(request, user_name):
     if request.user.is_authenticated():
-        return render(request, 'WeekChallenge/my_profile.html')
+        user_name = User.objects.get(username=user_name)
+
+        print(user_name.email)
+
+        return render(request, 'WeekChallenge/profile.html', {'user_name': user_name})
     else:
         return HttpResponseRedirect("/")
 
