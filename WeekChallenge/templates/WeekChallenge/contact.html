@@ -28,13 +28,14 @@
 
                         <br><br>
                         <h4>Administrators</h4>
-                            Somebody - <a href="$">Profile</a><br>
-                            Real Name<br>
-                            somebody@example.com
-                            <br><br>
-                            SomebodyElse - <a href="$">Profile</a><br>
-                            Real Name<br>
-                            somebodyelse@example.com
+                            {% for user in users %}
+                                {% if user.is_staff %}
+                                {{ user.username }} - <a href="/profile/{{ user.username }}">Profile</a><br>
+                                {{ user.first_name }} {{ user.last_name }}<br>
+                                {{ user.email }}
+                                <br><br>
+                                {% endif %}
+                            {% endfor %}
                     </div>
                     <div class="col-md-4">
                         <h4>Social?</h4>

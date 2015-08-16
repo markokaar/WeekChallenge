@@ -52,17 +52,25 @@
                 </div>
                 <div class="col-md-8 col-sm-12 col-xs-12">
                     <h3>Accepted challenges</h3>
-                    <div class="panel panel-default">
-                            <table class="table">
-                                <tr><td><b>Title</b></td><td><b>Challenge date</b></td></tr>
-                                {% for c in ch %}
-                                    <tr>
-                                        <td>{{ c.title }}</td>
-                                        <td>{{ c.date }}</td>
-                                    </tr>
-                                {% endfor %}
-                            </table>
-                        </div>
+                        {% if not no_accepted %}
+                            <div class="panel panel-default">
+                                <table class="table">
+                                    <tr><td><b>Title</b></td><td><b>Challenge date</b></td></tr>
+                                    {% for c in ch %}
+                                        {% for challenge in challenges %}
+                                            {% if c.challenge_id == challenge.id %}
+                                                <tr>
+                                                    <td>{{ challenge.title }}</td>
+                                                    <td>{{ c.date }}</td>
+                                                </tr>
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% endfor %}
+                                </table>
+                            </div>
+                        {% else %}
+                            <div class="alert alert-danger" role="alert">No challenges to show!</div>
+                        {% endif %}
                     </div>
             </div>
         </div>

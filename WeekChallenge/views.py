@@ -31,7 +31,8 @@ def about(request):
 
 
 def contact(request):
-    return render(request, 'WeekChallenge/contact.html')
+    users = User.objects.filter()
+    return render(request, 'WeekChallenge/contact.html', {'users': users})
 
 
 def add(request):
@@ -75,10 +76,20 @@ def log_in(request):
 
 def profile(request, user_name):
     if request.user.is_authenticated():
-        user_name = User.objects.get(username=user_name)
-        ch = Challenge.objects.filter(user_id=request.user.id)
+        user_name2 = User.objects.get(username=user_name)
+        ch = UserChallenge.objects.filter(user_id=user_name2.id)
+        challenges = Challenge.objects.filter()
 
-        return render(request, 'WeekChallenge/profile.html', {'user_name': user_name, 'ch': ch})
+        # If there is no accepted challenges
+        if not ch:
+            no_accepted = True
+        else:
+            no_accepted = False
+
+        return render(request, 'WeekChallenge/profile.html', {'user_name': user_name2,
+                                                              'ch': ch,
+                                                              'challenges': challenges,
+                                                              'no_accepted': no_accepted})
     else:
         return HttpResponseRedirect("/")
 
