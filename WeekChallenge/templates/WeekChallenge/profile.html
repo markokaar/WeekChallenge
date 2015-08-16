@@ -18,16 +18,22 @@
     <div class="wrap">
         <div class="container">
             <div class="row">
-                <div class="col-md-12">
-                    <h3><b>{{ user_name.username }}'s</b> profile</h3>
+                <div class="col-md-2">
+                <img class="img-thumbnail" src="{% static 'WeekChallenge/img/no-avatar.png' %}" alt="" width="150px" height="200px">
+
+                </div>
+            <div class="col-md-2">
+                <h3><b>{{ user_name.username }}'s</b> profile</h3>
                     {% if user_name.is_staff %}
                          <h4><span style="color: #eb9316;"><span class="glyphicon glyphicon-ok"></span> Admin</span></h4>
                     {% endif %}
 
-                </div>
+            </div>
+            <div class="col-md-8">
+                <h3>Private message</h3>
+            </div>
             </div>
 
-            <!-- NOTE: If admin ??-->
             <div class="row">
                 <div class="col-md-2 col-sm-6 col-xs-6">
                     <table border="0">
@@ -48,7 +54,7 @@
                 </div>
                 <div class="col-md-2 col-sm-6 col-xs-6">
                     <br>
-                    <!-- <img class="img-thumbnail" src="#" alt="" width="150px" height="200px"> -->
+
                 </div>
                 <div class="col-md-8 col-sm-12 col-xs-12">
                     <h3>Accepted challenges</h3>

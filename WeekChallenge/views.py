@@ -43,6 +43,14 @@ def add(request):
         return HttpResponseRedirect("/")
 
 
+def notifications(request):
+    return render(request, 'WeekChallenge/notifications.html')
+
+
+def search(request):
+    return render(request, 'WeekChallenge/search.html')
+
+
 def add_challenge(request):
     if request.user.is_authenticated():
         title = request.POST['inputTitle']

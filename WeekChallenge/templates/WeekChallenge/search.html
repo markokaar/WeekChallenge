@@ -1,0 +1,87 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-COMPATIBLE" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% load staticfiles %}
+    <title>Week Challenges - search users</title>
+
+    <link rel="stylesheet" type="text/css" href="{% static 'WeekChallenge/bootstrap/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'WeekChallenge/css/style.css' %}">
+
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+</head>
+<body>
+    {% include "WeekChallenge/base/navigation_bar.html" %}
+
+    <div class="wrap">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h3>Search users</h3>
+                </div>
+                <div class="col-md-8">
+                    <h3>Results - 2</h3>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4">
+                    <form action="#">
+                        <table border="0">
+                            <tr><td>Username</td><td><input type="text" class="form-control"></td></tr>
+                            <tr><td>First name</td><td><input type="text" class="form-control"></td></tr>
+                            <tr><td>Last name</td><td><input type="text" class="form-control"></td></tr>
+                            <tr><td>Email</td><td><input type="text" class="form-control"></td></tr>
+                            <tr><td colspan="2" align="center"><input type="submit" value="Search"></td></tr>
+                        </table>
+                    </form>
+                </div>
+                <div class="col-md-8">
+
+                    <div class="well">
+                        <div class="media">
+                          <div class="media-left">
+                            <a href="#">
+                              <img class="media-object" src="{% static 'WeekChallenge/img/testavatar.jpg' %}" alt="" width="150px" height="200px">
+                            </a>
+                          </div>
+                          <div class="media-body">
+                            <h4 class="media-heading"><a href="#">Username</a></h4>
+                                <b>First name:</b> Test <br>
+                                <b>Last name:</b> <small>none</small><br>
+                                <b>Bio:</b> <i>aosdkao wkoda ekmf wkfm oeamf aekf ewkjf kwjefn kse nwekfnwkj enwek wekj nkwjen kj.</i>
+                          </div>
+                        </div>
+                    </div>
+
+                    <div class="well">
+                        <div class="media">
+                          <div class="media-left">
+                            <a href="#">
+                              <img class="media-object" src="{% static 'WeekChallenge/img/testavatar.jpg' %}" alt="" width="150px" height="200px">
+                            </a>
+                          </div>
+                          <div class="media-body">
+                            <h4 class="media-heading"><a href="#">Username</a></h4>
+                                <b>First name:</b> Test <br>
+                                <b>Last name:</b> <small>none</small><br>
+                                <b>Bio:</b> <i>aosdkao wkoda ekmf wkfm oeamf aekf ewkjf kwjefn kse nwekfnwkj enwek wekj nkwjen kj.</i>
+                          </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+    {% include "WeekChallenge/base/foot.html" %}
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="{% static 'WeekChallenge/bootstrap/js/bootstrap.min.js' %}"></script>
+</body>
+</html>

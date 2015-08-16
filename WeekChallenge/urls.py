@@ -18,4 +18,6 @@ urlpatterns = [
     url(r'^up_challenge/(?P<challenge_id>[0-9]+)/$', views.up_challenge, name='up_challenge'),
     url(r'^user_accept_challenge/', views.user_accept_challenge, name='user_accept_challenge'),
     url(r'^add_challenge/', views.add_challenge, name='add_challenge'),
+    url(r'^notifications/', views.notifications, name='notifications'),
+    url(r'^search/', views.search, name='search'),
 ]
