@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponseRedirect
 from .forms import LoginForm, RegisterForm, AddForm
-from .models import Challenge, UserChallenge, UserFriend, Notification, Message
+from .models import Challenge, UserChallenge, UserFriend, Notification, Message, FriendRequest
 from django.utils import timezone
 
 
@@ -45,9 +45,87 @@ def add(request):
 
 def notifications(request):
     if request.user.is_authenticated():
-        return render(request, 'WeekChallenge/notifications.html')
+        friend_requests = FriendRequest.objects.filter(user_to=request.user.id, state=0)
+        all_notifications = Notification.objects.filter(user_id=request.user.id)
+
+        return render(request, 'WeekChallenge/notifications.html', {'friend_requests': friend_requests,
+                                                                    'all_notifications': all_notifications
+                                                                    })
     else:
         return HttpResponseRedirect("/")
+
+
+def mark_read(request, notification_id):
+    select_notification = Notification.objects.get(id=notification_id, user_id=request.user.id)
+    select_notification.new = False
+    select_notification.save()
+
+    return HttpResponseRedirect("/notifications/")
+
+
+def mark_unread(request, notification_id):
+    select_notification = Notification.objects.get(id=notification_id, user_id=request.user.id)
+    select_notification.new = True
+    select_notification.save()
+
+    return HttpResponseRedirect("/notifications/")
+
+
+def add_friend(request, friend_id):
+    if request.user.is_authenticated():
+        """select_user = UserFriend.objects.filter(user_id=request.user.id)
+
+        # if user in friend table. Creating friend for first user
+        if select_user:
+            select_user = UserFriend.objects.get(user_id=request.user.id)
+            select_user.friends += "," + friend_id
+            select_user.save()
+        else:
+            create_friend = UserFriend.objects.create()
+            create_friend.user_id = request.user.id
+            create_friend.friends = friend_id
+            create_friend.save()
+
+        # Creating friend for second user
+
+        """
+
+        """friend_request = FriendRequest.objects.create()
+        friend_request.user_from = request.user.id
+        friend_request.user_to = friend_id
+        friend_request.date = timezone.now()"""
+
+        friend_request = FriendRequest(user_from=request.user.id,
+                                       user_to=friend_id,
+                                       date=timezone.now())
+        friend_request.save()
+
+        return HttpResponseRedirect("/")
+    else:
+        return HttpResponseRedirect("/")
+
+
+def accept_friend(request, friend_id):
+    # deleting from FriendRequest table
+    friend_request = FriendRequest.objects.get(user_from=friend_id, user_to=request.user.id)
+    friend_request.delete()
+
+    # Sending notification to request sender.
+    send_notification = Notification(user_id=friend_id,
+                                     title=request.user.username + " accepted your friend request!",
+                                     new=True
+                                     )
+    send_notification.save()
+
+    return HttpResponseRedirect("/notifications/")
+
+
+def decline_friend(request, friend_id):
+    select_request = FriendRequest.objects.get(user_from=friend_id, user_to=request.user.id)
+    select_request.state = 2
+    select_request.save()
+
+    return HttpResponseRedirect("/notifications/")
 
 
 def search(request):
@@ -194,29 +272,6 @@ def decline_challenge(request, challenge_id):
             return HttpResponseRedirect("/check/")
         else:
             return HttpResponseRedirect("/")
-    else:
-        return HttpResponseRedirect("/")
-
-
-def add_friend(request, friend_id):
-    if request.user.is_authenticated():
-        select_user = UserFriend.objects.filter(user_id=request.user.id)
-
-        # if user in friend table. Creating friend for first user
-        if select_user:
-            select_user = UserFriend.objects.get(user_id=request.user.id)
-            select_user.friends += "," + friend_id
-            select_user.save()
-        else:
-            create_friend = UserFriend.objects.create()
-            create_friend.user_id = request.user.id
-            create_friend.friends = friend_id
-            create_friend.save()
-
-        # Creating friend for second user
-
-
-        return HttpResponseRedirect("/")
     else:
         return HttpResponseRedirect("/")
 

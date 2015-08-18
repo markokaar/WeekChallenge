@@ -47,3 +47,15 @@ class Message(models.Model):
     content = models.TextField()
     date = models.DateTimeField('date sent')
 
+    def __str__(self):
+        return self.title
+
+
+class FriendRequest(models.Model):
+    user_from = models.IntegerField(default=0)
+    user_to = models.IntegerField(default=0)
+    state = models.IntegerField(default=0)
+    date = models.DateTimeField('date sent')
+
+    def __int__(self):
+        return self.user_from

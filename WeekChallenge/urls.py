@@ -22,4 +22,8 @@ urlpatterns = [
     url(r'^search/', views.search, name='search'),
     url(r'^add_friend/(?P<friend_id>[0-9]+)/$', views.add_friend, name='add_friend'),
     url(r'^friendlist/(?P<user_id>[0-9]+)/$', views.friendlist, name='friendlist'),
+    url(r'^accept_friend/(?P<friend_id>[0-9]+)/$', views.accept_friend, name='accept_friend'),
+    url(r'^decline_friend/(?P<friend_id>[0-9]+)/$', views.decline_friend, name='decline_friend'),
+    url(r'^mark_read/(?P<notification_id>[0-9]+)/$', views.mark_read, name='mark_read'),
+    url(r'^mark_unread/(?P<notification_id>[0-9]+)/$', views.mark_unread, name='mark_unread'),
 ]
