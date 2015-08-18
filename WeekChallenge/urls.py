@@ -20,4 +20,6 @@ urlpatterns = [
     url(r'^add_challenge/', views.add_challenge, name='add_challenge'),
     url(r'^notifications/', views.notifications, name='notifications'),
     url(r'^search/', views.search, name='search'),
+    url(r'^add_friend/(?P<friend_id>[0-9]+)/$', views.add_friend, name='add_friend'),
+    url(r'^friendlist/(?P<user_id>[0-9]+)/$', views.friendlist, name='friendlist'),
 ]

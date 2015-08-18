@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponseRedirect
 from .forms import LoginForm, RegisterForm, AddForm
-from .models import Challenge, UserChallenge
+from .models import Challenge, UserChallenge, UserFriend, Notification, Message
 from django.utils import timezone
 
 
@@ -44,11 +44,17 @@ def add(request):
 
 
 def notifications(request):
-    return render(request, 'WeekChallenge/notifications.html')
+    if request.user.is_authenticated():
+        return render(request, 'WeekChallenge/notifications.html')
+    else:
+        return HttpResponseRedirect("/")
 
 
 def search(request):
-    return render(request, 'WeekChallenge/search.html')
+    if request.user.is_authenticated():
+        return render(request, 'WeekChallenge/search.html')
+    else:
+        return HttpResponseRedirect("/")
 
 
 def add_challenge(request):
@@ -113,8 +119,8 @@ def user_accept_challenge(request):
             week_challenge.save()
 
             c = UserChallenge(user_id=request.user.id,
-                          challenge_id=week_challenge.id,
-                          date=timezone.now())
+                              challenge_id=week_challenge.id,
+                              date=timezone.now())
             c.save()
 
             return HttpResponseRedirect("/")
@@ -192,6 +198,52 @@ def decline_challenge(request, challenge_id):
         return HttpResponseRedirect("/")
 
 
+def add_friend(request, friend_id):
+    if request.user.is_authenticated():
+        select_user = UserFriend.objects.filter(user_id=request.user.id)
+
+        # if user in friend table. Creating friend for first user
+        if select_user:
+            select_user = UserFriend.objects.get(user_id=request.user.id)
+            select_user.friends += "," + friend_id
+            select_user.save()
+        else:
+            create_friend = UserFriend.objects.create()
+            create_friend.user_id = request.user.id
+            create_friend.friends = friend_id
+            create_friend.save()
+
+        # Creating friend for second user
+
+
+        return HttpResponseRedirect("/")
+    else:
+        return HttpResponseRedirect("/")
+
+
+def friendlist(request, user_id):
+    if request.user.is_authenticated():
+        select_friendlist = UserFriend.objects.filter(user_id=user_id)
+
+        if select_friendlist:
+            select_friendlist = UserFriend.objects.get(user_id=user_id)
+            s = select_friendlist.friends
+            userlist = s.split(',')
+
+            """
+            find_friends = User.objects.filter()
+            for one in userlist:
+                find_friends = User.objects.filter(id=one) """
+
+            find_friends = User.objects.filter(id__in=userlist)
+
+            return render(request, 'WeekChallenge/friendlist.html', {'friendlist': select_friendlist, 'find_friends': find_friends})
+        else:
+            return render(request, 'WeekChallenge/friendlist.html')
+    else:
+        return HttpResponseRedirect("/")
+
+# Users stuff
 def create_user(request):
     if request.user.is_authenticated():
         username = request.POST['inputUsername']

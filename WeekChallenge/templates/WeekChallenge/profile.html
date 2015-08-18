@@ -27,16 +27,30 @@
                     {% if user_name.is_staff %}
                          <h4><span style="color: #eb9316;"><span class="glyphicon glyphicon-ok"></span> Admin</span></h4>
                     {% endif %}
-                    <a href="/add_friend/#">
+                    <a href="/add_friend/{{ user_name.id }}">
                         <button class="btn btn-default">
                             <span class="glyphicon glyphicon-plus"></span>
                             Add friend
                         </button>
                     </a>
+                    <!--
+                    <a href="/remove_friend/#">
+                        <button class="btn btn-default">
+                            <span class="glyphicon glyphicon-minus"></span>
+                            Add friend
+                        </button>
+                    </a>
+                    -->
                     <a href="/report/#">
                         <button class="btn btn-default">
                             <span class="glyphicon glyphicon-warning-sign"></span>
                             Report
+                        </button>
+                    </a>
+                    <a href="/friendlist/{{ user_name.id }}">
+                        <button class="btn btn-default">
+                            <span class="glyphicon glyphicon-sunglasses"></span>
+                            Friends
                         </button>
                     </a>
 
