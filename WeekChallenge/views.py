@@ -6,12 +6,31 @@ from .forms import LoginForm, RegisterForm, AddForm
 from .models import Challenge, UserChallenge, UserFriend, Notification, Message, FriendRequest
 from django.utils import timezone
 
+notifications_count = 0
+
+
+def notification_count(request):
+    if request.user.is_authenticated():
+        all_notifications = Notification.objects.filter(user_id=request.user.id, new=True)
+        all_friend_requests = FriendRequest.objects.filter(user_to=request.user.id, state=0)
+
+        global notifications_count
+
+        notifications_count = 0
+        for n in all_notifications:
+            notifications_count += 1
+
+        for n in all_friend_requests:
+            notifications_count += 1
+        return notifications_count
+
 
 def index(request):
     """ if request.user.is_authenticated():
         print("index: Kasutaja on sisse logitud!")
     else:
         print("index: Kasutaja EI OLE sisse logitud!") """
+    notification_count(request)
 
     select_challenge = Challenge.objects.get(state=2)
     chid = select_challenge.id
@@ -22,58 +41,112 @@ def index(request):
     else:
         is_accepted = False
 
-    context = {'c': select_challenge, 'is_accepted': is_accepted}
+    context = {'c': select_challenge, 'is_accepted': is_accepted, 'notifications_count': notifications_count}
     return render(request, 'WeekChallenge/index.html', context)
 
 
 def about(request):
-    return render(request, 'WeekChallenge/about.html')
+    notification_count(request)
+    return render(request, 'WeekChallenge/about.html', {'notifications_count': notifications_count})
 
 
 def contact(request):
+    notification_count(request)
     users = User.objects.filter()
-    return render(request, 'WeekChallenge/contact.html', {'users': users})
+    return render(request, 'WeekChallenge/contact.html', {'users': users, 'notifications_count': notifications_count})
 
 
 def add(request):
     if request.user.is_authenticated():
+        notification_count(request)
         add_form = AddForm()
-        return render(request, 'WeekChallenge/add.html', {'add_form': add_form})
+        return render(request, 'WeekChallenge/add.html', {'add_form': add_form, 'notifications_count': notifications_count})
     else:
         return HttpResponseRedirect("/")
 
 
 def notifications(request):
     if request.user.is_authenticated():
+        notification_count(request)
         friend_requests = FriendRequest.objects.filter(user_to=request.user.id, state=0)
         all_notifications = Notification.objects.filter(user_id=request.user.id)
 
+        n = []
+        for f in friend_requests:
+            n.append(f.user_from)
+        print("asd ")
+        print(n)
+
+        find_friends = User.objects.filter(id__in=n)
+
         return render(request, 'WeekChallenge/notifications.html', {'friend_requests': friend_requests,
-                                                                    'all_notifications': all_notifications
+                                                                    'all_notifications': all_notifications,
+                                                                    'notifications_count': notifications_count,
+                                                                    'find_friends': find_friends
                                                                     })
     else:
         return HttpResponseRedirect("/")
 
 
 def mark_read(request, notification_id):
-    select_notification = Notification.objects.get(id=notification_id, user_id=request.user.id)
-    select_notification.new = False
-    select_notification.save()
+    if request.user.is_authenticated():
+        select_notification = Notification.objects.get(id=notification_id, user_id=request.user.id)
+        select_notification.new = False
+        select_notification.save()
 
-    return HttpResponseRedirect("/notifications/")
+        return HttpResponseRedirect("/notifications/")
+    else:
+        return HttpResponseRedirect("/")
 
 
 def mark_unread(request, notification_id):
-    select_notification = Notification.objects.get(id=notification_id, user_id=request.user.id)
-    select_notification.new = True
-    select_notification.save()
+    if request.user.is_authenticated():
+        select_notification = Notification.objects.get(id=notification_id, user_id=request.user.id)
+        select_notification.new = True
+        select_notification.save()
 
-    return HttpResponseRedirect("/notifications/")
+        return HttpResponseRedirect("/notifications/")
+    else:
+        return HttpResponseRedirect("/")
+
+
+def delete_notification(request, notification_id):
+    if request.user.is_authenticated():
+        select_notification = Notification.objects.get(user_id=request.user.id, id=notification_id)
+        select_notification.delete()
+
+        return HttpResponseRedirect("/notifications/")
+    else:
+        return HttpResponseRedirect("/")
 
 
 def add_friend(request, friend_id):
     if request.user.is_authenticated():
-        """select_user = UserFriend.objects.filter(user_id=request.user.id)
+        friend_request = FriendRequest(user_from=request.user.id,
+                                       user_to=friend_id,
+                                       date=timezone.now())
+        friend_request.save()
+
+        return HttpResponseRedirect("/")
+    else:
+        return HttpResponseRedirect("/")
+
+
+def accept_friend(request, friend_id):
+    if request.user.is_authenticated():
+        # deleting from FriendRequest table
+        friend_request = FriendRequest.objects.get(user_from=friend_id, user_to=request.user.id)
+        friend_request.delete()
+
+        # Sending notification to request sender.
+        send_notification = Notification(user_id=friend_id,
+                                         title=request.user.username + " accepted your friend request!",
+                                         new=True
+                                         )
+        send_notification.save()
+
+        # Adding user to friendlist
+        select_user = UserFriend.objects.filter(user_id=request.user.id)
 
         # if user in friend table. Creating friend for first user
         if select_user:
@@ -86,51 +159,39 @@ def add_friend(request, friend_id):
             create_friend.friends = friend_id
             create_friend.save()
 
-        # Creating friend for second user
+        # Adding to other user friendlist
+        select_user = UserFriend.objects.filter(user_id=friend_id)
 
-        """
+        if select_user:
+            select_user = UserFriend.objects.get(user_id=friend_id)
+            select_user.friends += "," + str(request.user.id)
+            select_user.save()
+        else:
+            create_friend = UserFriend.objects.create()
+            create_friend.user_id = friend_id
+            create_friend.friends = request.user.id
+            create_friend.save()
 
-        """friend_request = FriendRequest.objects.create()
-        friend_request.user_from = request.user.id
-        friend_request.user_to = friend_id
-        friend_request.date = timezone.now()"""
-
-        friend_request = FriendRequest(user_from=request.user.id,
-                                       user_to=friend_id,
-                                       date=timezone.now())
-        friend_request.save()
-
-        return HttpResponseRedirect("/")
+        return HttpResponseRedirect("/notifications/")
     else:
         return HttpResponseRedirect("/")
 
 
-def accept_friend(request, friend_id):
-    # deleting from FriendRequest table
-    friend_request = FriendRequest.objects.get(user_from=friend_id, user_to=request.user.id)
-    friend_request.delete()
-
-    # Sending notification to request sender.
-    send_notification = Notification(user_id=friend_id,
-                                     title=request.user.username + " accepted your friend request!",
-                                     new=True
-                                     )
-    send_notification.save()
-
-    return HttpResponseRedirect("/notifications/")
-
-
 def decline_friend(request, friend_id):
-    select_request = FriendRequest.objects.get(user_from=friend_id, user_to=request.user.id)
-    select_request.state = 2
-    select_request.save()
+    if request.user.is_authenticated():
+        select_request = FriendRequest.objects.get(user_from=friend_id, user_to=request.user.id)
+        select_request.state = 2
+        select_request.save()
 
-    return HttpResponseRedirect("/notifications/")
+        return HttpResponseRedirect("/notifications/")
+    else:
+        return HttpResponseRedirect("/")
 
 
 def search(request):
     if request.user.is_authenticated():
-        return render(request, 'WeekChallenge/search.html')
+        notification_count(request)
+        return render(request, 'WeekChallenge/search.html', {'notifications_count': notifications_count})
     else:
         return HttpResponseRedirect("/")
 
@@ -168,6 +229,7 @@ def log_in(request):
 
 def profile(request, user_name):
     if request.user.is_authenticated():
+        notification_count(request)
         user_name2 = User.objects.get(username=user_name)
         ch = UserChallenge.objects.filter(user_id=user_name2.id)
         challenges = Challenge.objects.filter()
@@ -181,7 +243,9 @@ def profile(request, user_name):
         return render(request, 'WeekChallenge/profile.html', {'user_name': user_name2,
                                                               'ch': ch,
                                                               'challenges': challenges,
-                                                              'no_accepted': no_accepted})
+                                                              'no_accepted': no_accepted,
+                                                              'notifications_count': notifications_count
+                                                              })
     else:
         return HttpResponseRedirect("/")
 
@@ -211,6 +275,8 @@ def user_accept_challenge(request):
 def check_challenges(request):
     if request.user.is_authenticated():
         if request.user.is_staff:
+            notification_count(request)
+
             challenge_list = Challenge.objects.filter(state=0)[:10]
             accepted_list = Challenge.objects.filter(state=1)[:10]
             this_week = Challenge.objects.filter(state=2)
@@ -219,7 +285,8 @@ def check_challenges(request):
             context = {'challenge_list': challenge_list,
                        'accepted_list': accepted_list,
                        'history_list': history_list,
-                       'this_week': this_week
+                       'this_week': this_week,
+                       'notifications_count': notifications_count
                        }
             return render(request, 'WeekChallenge/check.html', context)
         else:
@@ -278,6 +345,7 @@ def decline_challenge(request, challenge_id):
 
 def friendlist(request, user_id):
     if request.user.is_authenticated():
+        notification_count(request)
         select_friendlist = UserFriend.objects.filter(user_id=user_id)
 
         if select_friendlist:
@@ -292,11 +360,14 @@ def friendlist(request, user_id):
 
             find_friends = User.objects.filter(id__in=userlist)
 
-            return render(request, 'WeekChallenge/friendlist.html', {'friendlist': select_friendlist, 'find_friends': find_friends})
+            return render(request, 'WeekChallenge/friendlist.html', {'friendlist': select_friendlist,
+                                                                     'find_friends': find_friends,
+                                                                     'notifications_count': notifications_count})
         else:
-            return render(request, 'WeekChallenge/friendlist.html')
+            return render(request, 'WeekChallenge/friendlist.html', {'notifications_count': notifications_count})
     else:
         return HttpResponseRedirect("/")
+
 
 # Users stuff
 def create_user(request):

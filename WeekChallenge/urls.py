@@ -26,4 +26,5 @@ urlpatterns = [
     url(r'^decline_friend/(?P<friend_id>[0-9]+)/$', views.decline_friend, name='decline_friend'),
     url(r'^mark_read/(?P<notification_id>[0-9]+)/$', views.mark_read, name='mark_read'),
     url(r'^mark_unread/(?P<notification_id>[0-9]+)/$', views.mark_unread, name='mark_unread'),
+    url(r'^delete_notification/(?P<notification_id>[0-9]+)/$', views.delete_notification, name='delete_notification'),
 ]

@@ -29,24 +29,26 @@
 
             <div class="row">
                 <div class="col-md-4">
-
                     {% if friend_requests %}
                         {% for friend in friend_requests %}
-                        <div class="well">
-
-                            !!! {{ friend.user_from }} has added you as a friend.
-                            <br>
-                            <a href="/accept_friend/{{ friend.user_from }}">
-                                <button class="btn btn-success btn-sm">
-                                    Accept
-                                </button>
-                            </a>
-                            <a href="/decline_friend/{{ friend.user_from }}">
-                                <button class="btn btn-danger btn-sm">
-                                    Decline
-                                </button>
-                            </a>
-
+                        <div class="list-group">
+                            <li class="list-group-item list-group-item-success">
+                                {% for f in find_friends %}
+                                    {% if f.id == friend.user_from %}
+                                        <p>{{ f.username }} has added you as a friend.</p>
+                                    {% endif %}
+                                {% endfor %}
+                                <a href="/accept_friend/{{ friend.user_from }}">
+                                    <button class="btn btn-success btn-sm">
+                                        Accept
+                                    </button>
+                                </a>
+                                <a href="/decline_friend/{{ friend.user_from }}">
+                                    <button class="btn btn-danger btn-sm">
+                                        Decline
+                                    </button>
+                                </a>
+                            </li>
                         </div>
                         {% endfor %}
                     {% else %}
@@ -55,27 +57,34 @@
 
                     {% if all_notifications %}
                         {% for notification in all_notifications %}
-                            <div class="well">
-                                <button type="button" class="close" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-
-                                <p>{{ notification.title }}</p>
-
-                                {% if notification.new %}
-                                    <a href="/mark_read/{{ notification.id }}">
-                                        <button class="btn btn-primary btn-xs">
-                                            Mark as read
-                                        </button>
-                                    </a>
+                            <div class="list-group">
+                            {% if notification.new %}
+                                <li class="list-group-item list-group-item-success">
                                 {% else %}
-                                    <a href="/mark_unread/{{ notification.id }}">
-                                        <button class="btn btn-default btn-xs">
-                                            Mark as unread
+                                <li class="list-group-item list-group-item-info">
+                                {% endif %}
+                                    <a href="/delete_notification/{{ notification.id }}">
+                                        <button type="button" class="close" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
                                         </button>
                                     </a>
-                                {% endif %}
 
+                                    <p>{{ notification.title }}</p>
+
+                                    {% if notification.new %}
+                                            <a href="/mark_read/{{ notification.id }}">
+                                                <button class="btn btn-primary btn-xs">
+                                                    Mark as read
+                                                </button>
+                                            </a>
+                                    {% else %}
+                                        <a href="/mark_unread/{{ notification.id }}">
+                                            <button class="btn btn-default btn-xs">
+                                                Mark as unread
+                                            </button>
+                                        </a>
+                                    {% endif %}
+                                </li>
                              </div>
                         {% endfor %}
                     {% else %}
