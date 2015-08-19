@@ -19,117 +19,129 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-4">
-                    <h3>Notifications</h3>
+                    <h3>Notifications & friend requests</h3>
                 </div>
                 <div class="col-md-8">
                     <h3>Private messages</h3>
-                    <h4>Send message</h4> <small>- soon</small>
                 </div>
             </div>
 
             <div class="row">
                 <div class="col-md-4">
-                    {% if friend_requests %}
-                        {% for friend in friend_requests %}
-                        <div class="list-group">
-                            <li class="list-group-item list-group-item-success">
-                                {% for f in find_friends %}
-                                    {% if f.id == friend.user_from %}
-                                        <p>{{ f.username }} has added you as a friend.</p>
-                                    {% endif %}
-                                {% endfor %}
-                                <a href="/accept_friend/{{ friend.user_from }}">
-                                    <button class="btn btn-success btn-sm">
-                                        Accept
-                                    </button>
-                                </a>
-                                <a href="/decline_friend/{{ friend.user_from }}">
-                                    <button class="btn btn-danger btn-sm">
-                                        Decline
-                                    </button>
-                                </a>
-                            </li>
-                        </div>
-                        {% endfor %}
-                    {% else %}
-                        <div class="alert alert-danger" role="alert">No friend requests.</div>
-                    {% endif %}
+                    <div class="list-group">
+                        {% if friend_requests %}
+                            {% for friend in friend_requests %}
 
-                    {% if all_notifications %}
-                        {% for notification in all_notifications %}
-                            <div class="list-group">
-                            {% if notification.new %}
                                 <li class="list-group-item list-group-item-success">
-                                {% else %}
-                                <li class="list-group-item list-group-item-info">
-                                {% endif %}
-                                    <a href="/delete_notification/{{ notification.id }}">
-                                        <button type="button" class="close" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
+                                    {% for f in find_friends %}
+                                        {% if f.id == friend.user_from %}
+                                            <p>{{ f.username }} has added you as a friend.</p>
+                                        {% endif %}
+                                    {% endfor %}
+                                    <a href="/accept_friend/{{ friend.user_from }}">
+                                        <button class="btn btn-success btn-sm">
+                                            Accept
                                         </button>
                                     </a>
+                                    <a href="/decline_friend/{{ friend.user_from }}">
+                                        <button class="btn btn-danger btn-sm">
+                                            Decline
+                                        </button>
+                                    </a>
+                                </li>
 
-                                    <p>{{ notification.title }}</p>
+                            {% endfor %}
+                        {% endif %}
 
-                                    {% if notification.new %}
-                                            <a href="/mark_read/{{ notification.id }}">
-                                                <button class="btn btn-primary btn-xs">
-                                                    Mark as read
-                                                </button>
-                                            </a>
+                        {% if all_notifications %}
+                            {% for notification in all_notifications %}
+
+                                {% if notification.new %}
+                                    <li class="list-group-item list-group-item-success">
                                     {% else %}
-                                        <a href="/mark_unread/{{ notification.id }}">
-                                            <button class="btn btn-default btn-xs">
-                                                Mark as unread
+                                    <li class="list-group-item list-group-item-info">
+                                    {% endif %}
+                                        <a href="/delete_notification/{{ notification.id }}">
+                                            <button type="button" class="close" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
                                             </button>
                                         </a>
-                                    {% endif %}
-                                </li>
-                             </div>
-                        {% endfor %}
-                    {% else %}
-                        <div class="alert alert-danger" role="alert">No notifications.</div>
-                    {% endif %}
+
+                                        <p>{{ notification.title }}</p>
+
+                                        {% if notification.new %}
+                                                <a href="/mark_read/{{ notification.id }}">
+                                                    <button class="btn btn-primary btn-xs">
+                                                        Mark as read
+                                                    </button>
+                                                </a>
+                                        {% else %}
+                                            <a href="/mark_unread/{{ notification.id }}">
+                                                <button class="btn btn-default btn-xs">
+                                                    Mark as unread
+                                                </button>
+                                            </a>
+                                        {% endif %}
+                                    </li>
+
+                            {% endfor %}
+                        {% else %}
+                            <div class="alert alert-danger" role="alert">No notifications.</div>
+                        {% endif %}
+                    </div>
                 </div>
                 <div class="col-md-8">
+                    <div class="list-group">
+                    {% for message in all_messages %}
 
-                    <div class="well">
-                        <button type="button" class="close" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
+                        {% if message.new %}
+                            <li class="list-group-item list-group-item-success">
+                            {% elif not message.new %}
+                            <li class="list-group-item list-group-item-info">
+                        {% else %}
 
-                        <h4>Heading</h4>
+                        {% endif %}
 
-                        And some information here. And some information here. And some information here.
-                        And some information here. And some information here. And some information here.
-                        And some information here. And some information here. And some information here.
-                        And some information here. And some information here. And some information here.
-                        And some information here. And some information here. And some information here.
-                        And some information here.
+                                <a href="/delete_pm/{{ message.id }}">
+                                    <button type="button" class="close" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </a>
 
-                        <br><span style="float:right">- from Marko. <a href="#">Reply</a></span>
+                                <h4>{{ message.title }}</h4>
+
+                                {{ message.content }}
+
+                                <span style="float:right">
+                                    {% for f in find_friends %}
+                                        {% if f.id == message.user_from %}
+                                            <i>from {{ f.username }} -</i>
+                                            <a href="/reply/{{ f.id }}">Reply</a>
+
+                                        {% endif %}
+                                    {% endfor %}
+                                </span>
+
+                            <br>
+                                {% if message.new %}
+                                    <a href="/mark_read_pm/{{ message.id }}">
+                                        <button class="btn btn-primary btn-xs">
+                                            Mark as read
+                                        </button>
+                                    </a>
+                                {% else %}
+                                    <a href="/mark_unread_pm/{{ message.id }}">
+                                        <button class="btn btn-default btn-xs">
+                                            Mark as unread
+                                        </button>
+                                    </a>
+                                {% endif %}
+                            </li>
+
+                        {% endfor %}
                     </div>
-
-                    <div class="well">
-                        <button type="button" class="close" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-
-                        <h4>Heading</h4>
-
-                        And some information here. And some information here. And some information here.
-                        And some information here. And some information here. And some information here.
-                        And some information here. And some information here. And some information here.
-                        And some information here. And some information here. And some information here.
-                        And some information here. And some information here. And some information here.
-                        And some information here.
-
-                        <br><span style="float:right">- from Marko. <a href="#">Reply</a></span>
-                    </div>
-
                 </div>
             </div>
-
         </div>
     </div>
 

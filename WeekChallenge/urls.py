@@ -21,10 +21,15 @@ urlpatterns = [
     url(r'^notifications/', views.notifications, name='notifications'),
     url(r'^search/', views.search, name='search'),
     url(r'^add_friend/(?P<friend_id>[0-9]+)/$', views.add_friend, name='add_friend'),
+    url(r'^remove_friend/(?P<friend_id>[0-9]+)/$', views.remove_friend, name='remove_friend'),
     url(r'^friendlist/(?P<user_id>[0-9]+)/$', views.friendlist, name='friendlist'),
     url(r'^accept_friend/(?P<friend_id>[0-9]+)/$', views.accept_friend, name='accept_friend'),
     url(r'^decline_friend/(?P<friend_id>[0-9]+)/$', views.decline_friend, name='decline_friend'),
     url(r'^mark_read/(?P<notification_id>[0-9]+)/$', views.mark_read, name='mark_read'),
     url(r'^mark_unread/(?P<notification_id>[0-9]+)/$', views.mark_unread, name='mark_unread'),
+    url(r'^mark_read_pm/(?P<pm_id>[0-9]+)/$', views.mark_read_pm, name='mark_read_pm'),
+    url(r'^mark_unread_pm/(?P<pm_id>[0-9]+)/$', views.mark_unread_pm, name='mark_unread_pm'),
     url(r'^delete_notification/(?P<notification_id>[0-9]+)/$', views.delete_notification, name='delete_notification'),
+    url(r'^send_pm/', views.send_pm, name='send_pm'),
+    url(r'^delete_pm/(?P<pm_id>[0-9]+)/$', views.delete_pm, name='delete_pm')
 ]

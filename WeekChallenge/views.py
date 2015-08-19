@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponseRedirect
-from .forms import LoginForm, RegisterForm, AddForm
+from .forms import LoginForm, RegisterForm, AddForm, MessageForm
 from .models import Challenge, UserChallenge, UserFriend, Notification, Message, FriendRequest
 from django.utils import timezone
 
@@ -13,6 +13,7 @@ def notification_count(request):
     if request.user.is_authenticated():
         all_notifications = Notification.objects.filter(user_id=request.user.id, new=True)
         all_friend_requests = FriendRequest.objects.filter(user_to=request.user.id, state=0)
+        all_messages = Message.objects.filter(user_to=request.user.id, new=True)
 
         global notifications_count
 
@@ -22,14 +23,14 @@ def notification_count(request):
 
         for n in all_friend_requests:
             notifications_count += 1
+
+        for n in all_messages:
+            notifications_count += 1
+
         return notifications_count
 
 
 def index(request):
-    """ if request.user.is_authenticated():
-        print("index: Kasutaja on sisse logitud!")
-    else:
-        print("index: Kasutaja EI OLE sisse logitud!") """
     notification_count(request)
 
     select_challenge = Challenge.objects.get(state=2)
@@ -53,14 +54,16 @@ def about(request):
 def contact(request):
     notification_count(request)
     users = User.objects.filter()
-    return render(request, 'WeekChallenge/contact.html', {'users': users, 'notifications_count': notifications_count})
+    return render(request, 'WeekChallenge/contact.html', {'users': users,
+                                                          'notifications_count': notifications_count})
 
 
 def add(request):
     if request.user.is_authenticated():
         notification_count(request)
         add_form = AddForm()
-        return render(request, 'WeekChallenge/add.html', {'add_form': add_form, 'notifications_count': notifications_count})
+        return render(request, 'WeekChallenge/add.html', {'add_form': add_form,
+                                                          'notifications_count': notifications_count})
     else:
         return HttpResponseRedirect("/")
 
@@ -68,12 +71,17 @@ def add(request):
 def notifications(request):
     if request.user.is_authenticated():
         notification_count(request)
-        friend_requests = FriendRequest.objects.filter(user_to=request.user.id, state=0)
-        all_notifications = Notification.objects.filter(user_id=request.user.id)
+        friend_requests = FriendRequest.objects.order_by('-id').filter(user_to=request.user.id, state=0)
+        all_notifications = Notification.objects.order_by('-id').filter(user_id=request.user.id)
+        all_messages = Message.objects.order_by('-id').filter(user_to=request.user.id)
 
         n = []
         for f in friend_requests:
             n.append(f.user_from)
+
+        for f in all_messages:
+            n.append(f.user_from)
+
         print("asd ")
         print(n)
 
@@ -82,7 +90,8 @@ def notifications(request):
         return render(request, 'WeekChallenge/notifications.html', {'friend_requests': friend_requests,
                                                                     'all_notifications': all_notifications,
                                                                     'notifications_count': notifications_count,
-                                                                    'find_friends': find_friends
+                                                                    'find_friends': find_friends,
+                                                                    'all_messages': all_messages
                                                                     })
     else:
         return HttpResponseRedirect("/")
@@ -110,6 +119,28 @@ def mark_unread(request, notification_id):
         return HttpResponseRedirect("/")
 
 
+def mark_read_pm(request, pm_id):
+    if request.user.is_authenticated():
+        select_pm = Message.objects.get(id=pm_id, user_to=request.user.id)
+        select_pm.new = False
+        select_pm.save()
+
+        return HttpResponseRedirect("/notifications/")
+    else:
+        return HttpResponseRedirect("/")
+
+
+def mark_unread_pm(request, pm_id):
+    if request.user.is_authenticated():
+        select_pm = Message.objects.get(id=pm_id, user_to=request.user.id)
+        select_pm.new = True
+        select_pm.save()
+
+        return HttpResponseRedirect("/notifications/")
+    else:
+        return HttpResponseRedirect("/")
+
+
 def delete_notification(request, notification_id):
     if request.user.is_authenticated():
         select_notification = Notification.objects.get(user_id=request.user.id, id=notification_id)
@@ -130,6 +161,11 @@ def add_friend(request, friend_id):
         return HttpResponseRedirect("/")
     else:
         return HttpResponseRedirect("/")
+
+
+def remove_friend(request, friend_id):
+
+    return HttpResponseRedirect("/")
 
 
 def accept_friend(request, friend_id):
@@ -240,14 +276,53 @@ def profile(request, user_name):
         else:
             no_accepted = False
 
+        check_friendship = UserFriend.objects.get(user_id=request.user.id)
+
+        #print(check_friendship.friends)
+        s = check_friendship.friends
+        userlist = s.split(',')
+        userlist = list(map(int, userlist))
+
+        already_friends = False
+        if user_name2.id in userlist:
+            already_friends = True
+
+        # Private message stuff
+        message_form = MessageForm()
+
         return render(request, 'WeekChallenge/profile.html', {'user_name': user_name2,
                                                               'ch': ch,
                                                               'challenges': challenges,
                                                               'no_accepted': no_accepted,
-                                                              'notifications_count': notifications_count
+                                                              'notifications_count': notifications_count,
+                                                              'message_form': message_form,
+                                                              'already_friends': already_friends
                                                               })
     else:
         return HttpResponseRedirect("/")
+
+
+def send_pm(request):
+    pm_id = request.POST['pm_id']
+    pm_title = request.POST['inputTitle']
+    pm_content = request.POST['inputContent']
+
+    create_message = Message(user_to = pm_id,
+                             user_from = request.user.id,
+                             title = pm_title,
+                             content = pm_content,
+                             date=timezone.now()
+                             )
+    create_message.save()
+
+    return HttpResponseRedirect("/")
+
+
+def delete_pm(request, pm_id):
+    select_pm = Message.objects.get(id=pm_id, user_to=request.user.id)
+    select_pm.delete()
+
+    return HttpResponseRedirect("/notifications/")
 
 
 def user_accept_challenge(request):

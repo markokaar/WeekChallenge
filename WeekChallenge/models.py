@@ -46,6 +46,7 @@ class Message(models.Model):
     title = models.CharField(max_length=100000)
     content = models.TextField()
     date = models.DateTimeField('date sent')
+    new = models.BooleanField(default=True)
 
     def __str__(self):
         return self.title

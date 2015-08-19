@@ -59,3 +59,18 @@ class AddForm(forms.Form):
                                        widget=forms.Textarea(attrs={'class': 'form-control',
                                                                     'placeholder': 'Challenge description'}),
                                        )
+
+
+class MessageForm(forms.Form):
+    inputTitle = forms.CharField(label='',
+                                 max_length=50000,
+                                 required=True,
+                                 widget=forms.TextInput(attrs={'class': 'form-control',
+                                                               'placeholder': 'Title'})
+                                 )
+    inputContent = forms.CharField(label='',
+                                   max_length=2000000000,
+                                   required=True,
+                                   widget=forms.Textarea(attrs={'class': 'form-control',
+                                                                'placeholder': 'Message'})
+                                   )

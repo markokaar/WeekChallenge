@@ -27,20 +27,22 @@
                     {% if user_name.is_staff %}
                          <h4><span style="color: #eb9316;"><span class="glyphicon glyphicon-ok"></span> Admin</span></h4>
                     {% endif %}
-                    <a href="/add_friend/{{ user_name.id }}">
-                        <button class="btn btn-default">
-                            <span class="glyphicon glyphicon-plus"></span>
-                            Add friend
-                        </button>
-                    </a>
-                    <!--
-                    <a href="/remove_friend/#">
-                        <button class="btn btn-default">
-                            <span class="glyphicon glyphicon-minus"></span>
-                            Add friend
-                        </button>
-                    </a>
-                    -->
+
+                    {% if not already_friends %}
+                        <a href="/add_friend/{{ user_name.id }}">
+                            <button class="btn btn-default">
+                                <span class="glyphicon glyphicon-plus"></span>
+                                Add friend
+                            </button>
+                        </a>
+                    {% else %}
+                        <a href="/remove_friend/#">
+                            <button class="btn btn-danger">
+                                <span class="glyphicon glyphicon-minus"></span>
+                                Remove friend
+                            </button>
+                        </a>
+                    {% endif %}
                     <a href="/report/#">
                         <button class="btn btn-default">
                             <span class="glyphicon glyphicon-warning-sign"></span>
@@ -56,7 +58,13 @@
 
             </div>
             <div class="col-md-8">
-                <h3>Private message</h3>
+                <h3>Private message to {{ user_name.username }}</h3>
+                    <form class="form" action="/send_pm/" method="POST">
+                        {% csrf_token %}
+                        {{ message_form }}
+                        <input type="hidden" name="pm_id" value="{{ user_name.id }}">
+                        <input class="btn btn-primary" type="submit" value="Send">
+                    </form>
             </div>
             </div>
 
