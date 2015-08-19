@@ -36,11 +36,11 @@
 
 
                 <div class="row">
-                    <div class="col-md-9">
+                    <div class="col-md-9 col-sm-9 col-xs-9">
                         <h4><b>{{ c.accept_count }}</b> users accepted this challenge.</h4>
                         <!-- <h4><b>0</b> active users. <small> - soon..</small></h4> -->
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-3 col-sm-3 col-xs-3">
                         {% if user.is_authenticated %}
                             {% if is_accepted %}
                                 <button type="button" class="btn btn-primary btn-lg" disabled="disabled">Accepted</button>

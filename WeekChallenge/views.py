@@ -58,6 +58,16 @@ def contact(request):
                                                           'notifications_count': notifications_count})
 
 
+def ads(request):
+    notification_count(request)
+    return render(request, 'WeekChallenge/ads.html', {'notifications_count': notifications_count})
+
+
+def donate(request):
+    notification_count(request)
+    return render(request, 'WeekChallenge/donate.html', {'notifications_count': notifications_count})
+
+
 def add(request):
     if request.user.is_authenticated():
         notification_count(request)
@@ -81,9 +91,6 @@ def notifications(request):
 
         for f in all_messages:
             n.append(f.user_from)
-
-        print("asd ")
-        print(n)
 
         find_friends = User.objects.filter(id__in=n)
 
@@ -164,8 +171,37 @@ def add_friend(request, friend_id):
 
 
 def remove_friend(request, friend_id):
+    if request.user.is_authenticated():
+        # Remove from logged user
+        select_user1 = UserFriend.objects.get(user_id=request.user.id)
 
-    return HttpResponseRedirect("/")
+
+        friendlist = select_user1.friends
+        friendlist = friendlist.split(",")
+        friendlist.remove(friend_id)
+        friendlist = ','.join(friendlist)
+
+        if friendlist == "":
+            select_user1.delete()
+        else:
+            select_user1.friends = friendlist
+            select_user1.save()
+
+        select_user2 = UserFriend.objects.get(user_id=friend_id)
+        friendlist = select_user2.friends
+        friendlist = friendlist.split(",")
+        friendlist.remove(str(request.user.id))
+        friendlist = ','.join(friendlist)
+
+        if friendlist == "":
+            select_user2.delete()
+        else:
+            select_user2.friends = friendlist
+            select_user2.save()
+
+        return HttpResponseRedirect("/")
+    else:
+        return HttpResponseRedirect("/")
 
 
 def accept_friend(request, friend_id):
@@ -276,16 +312,22 @@ def profile(request, user_name):
         else:
             no_accepted = False
 
-        check_friendship = UserFriend.objects.get(user_id=request.user.id)
-
-        #print(check_friendship.friends)
-        s = check_friendship.friends
-        userlist = s.split(',')
-        userlist = list(map(int, userlist))
-
         already_friends = False
-        if user_name2.id in userlist:
-            already_friends = True
+        check_friendship = UserFriend.objects.filter(user_id=request.user.id)
+        if check_friendship:
+            check_friendship = UserFriend.objects.get(user_id=request.user.id)
+            # print(check_friendship.friends)
+            s = check_friendship.friends
+            userlist = s.split(',')
+            userlist = list(map(int, userlist))
+
+            if user_name2.id in userlist:
+                already_friends = True
+
+        # IF profile belongs to logged user
+        its_you = False
+        if request.user.username == user_name:
+            its_you = True
 
         # Private message stuff
         message_form = MessageForm()
@@ -296,7 +338,8 @@ def profile(request, user_name):
                                                               'no_accepted': no_accepted,
                                                               'notifications_count': notifications_count,
                                                               'message_form': message_form,
-                                                              'already_friends': already_friends
+                                                              'already_friends': already_friends,
+                                                              'its_you': its_you
                                                               })
     else:
         return HttpResponseRedirect("/")

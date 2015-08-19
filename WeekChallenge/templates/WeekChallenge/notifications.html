@@ -20,14 +20,6 @@
             <div class="row">
                 <div class="col-md-4">
                     <h3>Notifications & friend requests</h3>
-                </div>
-                <div class="col-md-8">
-                    <h3>Private messages</h3>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-md-4">
                     <div class="list-group">
                         {% if friend_requests %}
                             {% for friend in friend_requests %}
@@ -91,6 +83,7 @@
                     </div>
                 </div>
                 <div class="col-md-8">
+                    <h3>Private messages</h3>
                     <div class="list-group">
                     {% for message in all_messages %}
 

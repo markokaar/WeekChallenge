@@ -18,48 +18,64 @@
     <div class="wrap">
         <div class="container">
             <div class="row">
-                <div class="col-md-2">
+                <div class="col-md-2 col-sm-3 col-xs-4">
                 <img class="img-thumbnail" src="{% static 'WeekChallenge/img/no-avatar.png' %}" alt="" width="150px" height="200px">
-
+                    <table border="0">
+                        <h3>User&nbsp;information</h3>
+                        <tr><td><b>Username:</b></td><td>{{ user_name.username }}</td></tr>
+                        <tr><td><b>First&nbsp;name:</b></td><td>{{ user_name.first_name }}</td></tr>
+                        <tr><td><b>Last&nbsp;name:</b></td><td>{{ user_name.last_name }}</td></tr>
+                        <tr><td><b>Email:</b></td><td>{{ user_name.email }}</td></tr>
+                    </table>
                 </div>
-            <div class="col-md-2">
-                <h3><b>{{ user_name.username }}'s</b> profile</h3>
+            <div class="col-md-3 col-sm-4 col-xs-8">
+                <h3><b>{{ user_name.username }}'s</b>&nbsp;profile</h3>
                     {% if user_name.is_staff %}
                          <h4><span style="color: #eb9316;"><span class="glyphicon glyphicon-ok"></span> Admin</span></h4>
                     {% endif %}
 
-                    {% if not already_friends %}
-                        <a href="/add_friend/{{ user_name.id }}">
-                            <button class="btn btn-default">
-                                <span class="glyphicon glyphicon-plus"></span>
-                                Add friend
-                            </button>
-                        </a>
+                    {% if not its_you %}
+                        {% if not already_friends %}
+                            <a href="/add_friend/{{ user_name.id }}">
+                                <button class="btn btn-success">
+                                    <span class="glyphicon glyphicon-plus"></span>
+                                    Add friend
+                                </button>
+                            </a>
+                        {% else %}
+                            <a href="/remove_friend/{{ user_name.id }}">
+                                <button class="btn btn-danger">
+                                    <span class="glyphicon glyphicon-minus"></span>
+                                    Remove friend
+                                </button>
+                            </a>
+                        {% endif %}
                     {% else %}
-                        <a href="/remove_friend/#">
-                            <button class="btn btn-danger">
-                                <span class="glyphicon glyphicon-minus"></span>
-                                Remove friend
+                        <a href="#">
+                            <button class="btn btn-warning" disabled="disabled">
+
+                                It's you!
                             </button>
                         </a>
                     {% endif %}
-                    <a href="/report/#">
-                        <button class="btn btn-default">
-                            <span class="glyphicon glyphicon-warning-sign"></span>
-                            Report
-                        </button>
-                    </a>
                     <a href="/friendlist/{{ user_name.id }}">
                         <button class="btn btn-default">
                             <span class="glyphicon glyphicon-sunglasses"></span>
                             Friends
                         </button>
                     </a>
+                    <br><br>
+                    <a href="/report/#">
+                        <button class="btn btn-default">
+                            <span class="glyphicon glyphicon-warning-sign"></span>
+                            Report
+                        </button>
+                    </a>
 
             </div>
-            <div class="col-md-8">
-                <h3>Private message to {{ user_name.username }}</h3>
-                    <form class="form" action="/send_pm/" method="POST">
+            <div class="col-md-7 col-sm-5 col-xs-12">
+                <h3>Private message to {{ user_name.username }} {% if its_you %}(to yourself){% endif %}</h3>
+                    <form class="form-pm" action="/send_pm/" method="POST">
                         {% csrf_token %}
                         {{ message_form }}
                         <input type="hidden" name="pm_id" value="{{ user_name.id }}">
@@ -70,14 +86,6 @@
 
             <div class="row">
                 <div class="col-md-2 col-sm-6 col-xs-6">
-                    <table border="0">
-                        <h3>User&nbsp;information</h3>
-                        <tr><td><b>Username:</b></td><td>{{ user_name.username }}</td></tr>
-                        <tr><td><b>First&nbsp;name:</b></td><td>{{ user_name.first_name }}</td></tr>
-                        <tr><td><b>Last&nbsp;name:</b></td><td>{{ user_name.last_name }}</td></tr>
-                        <tr><td><b>Email:</b></td><td>{{ user_name.email }}</td></tr>
-                    </table>
-
                     <table border="0">
                         <tr><td><h3>Stats</h3></td></tr>
                         <tr><td><b>Level:</b></td><td>0</td></tr>
