@@ -22,55 +22,63 @@
                     <h3>Search users</h3>
                 </div>
                 <div class="col-md-8">
-                    <h3>Results - 2</h3>
+                    <h3>Results
+                        {% if search_count %}
+                            {% if search_count < 50 %}
+                                - {{ search_count }}
+                            {% else %}
+                                - {{ search_count }} (showing first 50)
+                            {% endif %}
+                        {% endif %}
+                    </h3>
                 </div>
             </div>
 
             <div class="row">
                 <div class="col-md-4">
-                    <form action="#">
-                        <table border="0">
-                            <tr><td>Username</td><td><input type="text" class="form-control"></td></tr>
-                            <tr><td>First name</td><td><input type="text" class="form-control"></td></tr>
-                            <tr><td>Last name</td><td><input type="text" class="form-control"></td></tr>
-                            <tr><td>Email</td><td><input type="text" class="form-control"></td></tr>
-                            <tr><td colspan="2" align="center"><input type="submit" value="Search"></td></tr>
-                        </table>
-                    </form>
+                    <form class="form-search" action="/search/" method="POST">
+
+                    {% csrf_token %}
+                    {{ search_form }}
+
+                    <input class="btn btn-lg btn-primary" type="submit" value="Search">
+                </form>
+
                 </div>
                 <div class="col-md-8">
-
-                    <div class="well">
-                        <div class="media">
-                          <div class="media-left">
-                            <a href="#">
-                              <img class="media-object" src="{% static 'WeekChallenge/img/testavatar.jpg' %}" alt="" width="150px" height="200px">
-                            </a>
-                          </div>
-                          <div class="media-body">
-                            <h4 class="media-heading"><a href="#">Username</a></h4>
-                                <b>First name:</b> Test <br>
-                                <b>Last name:</b> <small>none</small><br>
-                                <b>Bio:</b> <i>aosdkao wkoda ekmf wkfm oeamf aekf ewkjf kwjefn kse nwekfnwkj enwek wekj nkwjen kj.</i>
-                          </div>
-                        </div>
-                    </div>
-
-                    <div class="well">
-                        <div class="media">
-                          <div class="media-left">
-                            <a href="#">
-                              <img class="media-object" src="{% static 'WeekChallenge/img/testavatar.jpg' %}" alt="" width="150px" height="200px">
-                            </a>
-                          </div>
-                          <div class="media-body">
-                            <h4 class="media-heading"><a href="#">Username</a></h4>
-                                <b>First name:</b> Test <br>
-                                <b>Last name:</b> <small>none</small><br>
-                                <b>Bio:</b> <i>aosdkao wkoda ekmf wkfm oeamf aekf ewkjf kwjefn kse nwekfnwkj enwek wekj nkwjen kj.</i>
-                          </div>
-                        </div>
-                    </div>
+                    {% if not search_count and search_count != 0%}
+                        <div class="alert alert-success" role="alert"><-- Search something first.</div>
+                    {% else %}
+                        {% if search_count == 0 %}
+                            <div class="alert alert-danger" role="alert">No results!</div>
+                        {% endif %}
+                        {% for result in search_results %}
+                            <div class="well">
+                                <div class="media">
+                                  <div class="media-left">
+                                    <a href="#">
+                                      <img class="media-object" src="{% static 'WeekChallenge/img/testavatar.jpg' %}" alt="" width="150px" height="200px">
+                                    </a>
+                                  </div>
+                                  <div class="media-body">
+                                    <h4 class="media-heading">
+                                        <a href="/profile/{{ result.username }}">{{ result.username }}</a>
+                                        {% if result.is_staff %}
+                                            <span style="color: #eb9316;">
+                                                <span class="glyphicon glyphicon-ok"></span>
+                                                Admin
+                                            </span>
+                                        {% endif %}
+                                    </h4>
+                                        <b>First name:</b> {{ result.first_name }} <br>
+                                        <b>Last name:</b> {{ result.last_name }}<br>
+                                        <b>Email:</b> {{ result.email }}<br>
+                                        <b>Bio:</b> <i>aosdkao wkoda ekmf wkfm oeamf aekf ewkjf kwjefn kse nwekfnwkj enwek wekj nkwjen kj.</i>
+                                  </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
                 </div>
             </div>
 

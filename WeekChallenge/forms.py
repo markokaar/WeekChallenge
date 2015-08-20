@@ -74,3 +74,30 @@ class MessageForm(forms.Form):
                                    widget=forms.Textarea(attrs={'class': 'form-control',
                                                                 'placeholder': 'Message'})
                                    )
+
+
+class SearchForm(forms.Form):
+    inputUsername = forms.CharField(label='',
+                                     max_length=50000,
+                                     required=False,
+                                     widget=forms.TextInput(attrs={'class': 'form-control',
+                                                                   'placeholder': 'Username'})
+                                     )
+    inputFirstName = forms.CharField(label='',
+                                      max_length=50000,
+                                      required=False,
+                                      widget=forms.TextInput(attrs={'class': 'form-control',
+                                                                    'placeholder': 'First name'})
+                                      )
+    inputLastName = forms.CharField(label='',
+                                     max_length=50000,
+                                     required=False,
+                                     widget=forms.TextInput(attrs={'class': 'form-control',
+                                                                   'placeholder': 'Last name'})
+                                     )
+    inputEmail = forms.CharField(label='',
+                                  max_length=50000,
+                                  required=False,
+                                  widget=forms.TextInput(attrs={'class': 'form-control',
+                                                                'placeholder': 'Email'})
+                                     )

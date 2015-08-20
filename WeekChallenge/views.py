@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponseRedirect
-from .forms import LoginForm, RegisterForm, AddForm, MessageForm
+from .forms import LoginForm, RegisterForm, AddForm, MessageForm, SearchForm
 from .models import Challenge, UserChallenge, UserFriend, Notification, Message, FriendRequest
 from django.utils import timezone
 
@@ -262,8 +262,35 @@ def decline_friend(request, friend_id):
 
 def search(request):
     if request.user.is_authenticated():
-        notification_count(request)
-        return render(request, 'WeekChallenge/search.html', {'notifications_count': notifications_count})
+        if request.method == 'POST':
+            username = request.POST['inputUsername']
+            firstname = request.POST['inputFirstName']
+            lastname = request.POST['inputLastName']
+            email = request.POST['inputEmail']
+
+            search_results = User.objects.filter(username__icontains=username,
+                                                 first_name__icontains=firstname,
+                                                 last_name__icontains=lastname,
+                                                 email__icontains=email
+                                                 )[:50]
+            search_count = 0
+            for n in search_results:
+                search_count += 1
+
+            notification_count(request)
+            search_form = SearchForm()
+            return render(request, 'WeekChallenge/search.html', {'notifications_count': notifications_count,
+                                                                 'search_form': search_form,
+                                                                 'search_results': search_results,
+                                                                 'search_count': search_count
+                                                                 })
+        else:
+            # Search form
+            notification_count(request)
+            search_form = SearchForm()
+            return render(request, 'WeekChallenge/search.html', {'notifications_count': notifications_count,
+                                                                 'search_form': search_form
+                                                                 })
     else:
         return HttpResponseRedirect("/")
 
