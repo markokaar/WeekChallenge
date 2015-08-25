@@ -1,0 +1,83 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-COMPATIBLE" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% load staticfiles %}
+    <title>Week Challenges - settings</title>
+
+    <link rel="stylesheet" type="text/css" href="{% static 'WeekChallenge/bootstrap/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'WeekChallenge/css/style.css' %}">
+
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+</head>
+<body>
+    {% include "WeekChallenge/base/navigation_bar.html" %}
+
+    <div class="wrap">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <h3>User settings & edit profile</h3>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <h4>Edit username</h4>
+                    <p>For logging in.</p>
+                    <form class="form-settings" action="/edit/username" method="GET">
+                        {% csrf_token %}
+                        {{ e_username_form }}
+                        <input class="btn btn-sm btn-primary" type="submit" value="Change username">
+                    </form>
+
+                    <h4>Edit real name</h4>
+                    <p>Optional. To delete name leave form empty.</p>
+                    <form class="form-settings" action="/edit/realname" method="GET">
+                        {% csrf_token %}
+                        {{ e_name_form }}
+                        <input class="btn btn-sm btn-primary" type="submit" value="Change name">
+                    </form>
+
+                    <h4>Edit email</h4>
+                    <form class="form-settings" action="/edit/email" method="GET">
+                        {% csrf_token %}
+                        {{ e_email_form }}
+                        <input class="btn btn-sm btn-primary" type="submit" value="Change email">
+                    </form>
+
+                    <h4>Edit password</h4>
+                    <form class="form-settings" action="/edit/password" method="GET">
+                        {% csrf_token %}
+                        {{ e_password_form }}
+                        <input class="btn btn-sm btn-primary" type="submit" value="Change password">
+                    </form>
+
+
+
+                </div>
+                <div class="col-md-6">
+                    <h4>User information</h4>
+                    <table border="1">
+                        <tr><td>Username</td><td>{{ request.user.username }}</td></tr>
+                        <tr><td>First name</td><td>{{ request.user.first_name }}</td></tr>
+                        <tr><td>Last name</td><td>{{ request.user.last_name }}</td></tr>
+                        <tr><td>Email</td><td>{{ request.user.email }}</td></tr>
+                        <tr><td>Bio</td><td><small>soon</small></td></tr>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+    {% include "WeekChallenge/base/foot.html" %}
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="{% static 'WeekChallenge/bootstrap/js/bootstrap.min.js' %}"></script>
+</body>
+</html>

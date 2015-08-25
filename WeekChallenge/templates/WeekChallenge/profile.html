@@ -53,11 +53,11 @@
                     {% else %}
                         <a href="#">
                             <button class="btn btn-warning" disabled="disabled">
-
                                 It's you!
                             </button>
                         </a>
                     {% endif %}
+
                     <a href="/friendlist/{{ user_name.id }}">
                         <button class="btn btn-default">
                             <span class="glyphicon glyphicon-sunglasses"></span>
@@ -71,6 +71,14 @@
                             Report
                         </button>
                     </a>
+                    {% if its_you %}
+                        <a href="/settings">
+                        <button class="btn btn-default">
+                            <span class="glyphicon glyphicon-cog"></span>
+                            Settings
+                        </button>
+                    </a>
+                    {% endif %}
 
             </div>
             <div class="col-md-7 col-sm-5 col-xs-12">

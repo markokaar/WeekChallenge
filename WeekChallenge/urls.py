@@ -33,5 +33,8 @@ urlpatterns = [
     url(r'^mark_unread_pm/(?P<pm_id>[0-9]+)/$', views.mark_unread_pm, name='mark_unread_pm'),
     url(r'^delete_notification/(?P<notification_id>[0-9]+)/$', views.delete_notification, name='delete_notification'),
     url(r'^send_pm/', views.send_pm, name='send_pm'),
-    url(r'^delete_pm/(?P<pm_id>[0-9]+)/$', views.delete_pm, name='delete_pm')
+    url(r'^delete_pm/(?P<pm_id>[0-9]+)/$', views.delete_pm, name='delete_pm'),
+    url(r'^settings/$', views.settings, name='settings'),
+    url(r'^edit/(?P<typee>[a-zA-Z0-9_.-]+)/$', views.edit, name='edit'),
+    url(r'^password_changed/$', views.password_changed, name='password_changed')
 ]

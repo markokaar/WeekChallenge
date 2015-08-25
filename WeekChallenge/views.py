@@ -1,8 +1,10 @@
 from django.shortcuts import render
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.hashers import check_password, make_password
 from django.http import HttpResponseRedirect
-from .forms import LoginForm, RegisterForm, AddForm, MessageForm, SearchForm
+from .forms import LoginForm, RegisterForm, AddForm, MessageForm, SearchForm, EditUsernameForm, \
+    EditNameForm, EditEmailForm, EditPasswordForm
 from .models import Challenge, UserChallenge, UserFriend, Notification, Message, FriendRequest
 from django.utils import timezone
 
@@ -372,15 +374,106 @@ def profile(request, user_name):
         return HttpResponseRedirect("/")
 
 
+def settings(request):
+    if request.user.is_authenticated():
+        notification_count(request)
+        e_username_form = EditUsernameForm()
+        e_name_form = EditNameForm()
+        e_email_form = EditEmailForm()
+        e_password_form = EditPasswordForm()
+
+        return render(request, 'WeekChallenge/settings.html', {'e_username_form': e_username_form,
+                                                               'e_name_form': e_name_form,
+                                                               'e_email_form': e_email_form,
+                                                               'e_password_form': e_password_form,
+                                                               'notifications_count': notifications_count
+                                                               })
+    else:
+        return HttpResponseRedirect("/")
+
+
+def edit(request, typee):
+    if request.user.is_authenticated():
+        if request.method == "GET":
+
+            if typee == "username":
+                if not request.GET['inputUsername'] == "":
+                    if not request.GET['inputPassword'] == "" and check_password(request.GET['inputPassword'], request.user.password):
+                        if not User.objects.filter(username=request.GET['inputUsername']):
+                            # Everything OK - username not empty, not in use, pw matches.
+                            usern = User.objects.get(username=request.user.username)
+                            usern.username = request.GET['inputUsername']
+                            usern.save()
+                        else:
+                            print("username already in use!")
+                            return HttpResponseRedirect("/settings/")
+                    else:
+                        print("pw is wrong")
+                        return HttpResponseRedirect("/settings/")
+                else:
+                    print("No username!!")
+                    return HttpResponseRedirect("/settings/")
+
+            elif typee == "realname":
+                usern = User.objects.get(username=request.user.username)
+                usern.first_name = request.GET['inputFirstName']
+                usern.last_name = request.GET['inputLastName']
+                usern.save()
+
+            elif typee == "email":
+                if not request.GET['inputEmail'] == "" and not User.objects.filter(email=request.GET['inputEmail']):
+                    usern = User.objects.get(username=request.user.username)
+                    usern.email = request.GET['inputEmail']
+                    usern.save()
+                else:
+                    print("Email empty or already in use")
+                    return HttpResponseRedirect("/settings/")
+
+            elif typee == "password":
+                if not request.GET['inputPassword'] == "" and not request.GET['inputNewPassword'] == "" and not request.GET['inputNewPassword2'] == "":
+                    if check_password(request.GET['inputPassword'], request.user.password):
+                        if request.GET['inputNewPassword'] == request.GET['inputNewPassword2']:
+                            new_pw = make_password(request.GET['inputNewPassword'])
+                            usern = User.objects.get(username=request.user.username)
+                            usern.password = new_pw
+                            usern.save()
+
+                            print("Password changed!")
+                            return HttpResponseRedirect("/password_changed/")
+                        else:
+                            print("New passwords does not match")
+                            return HttpResponseRedirect("/settings/")
+                    else:
+                        print("Old password is wrong!")
+                        return HttpResponseRedirect("/settings/")
+                else:
+                    print("Something is missing.. Did you insert all 3 passwords?")
+                    return HttpResponseRedirect("/settings/")
+
+            else:
+                print("wtf? Something happened..")
+
+            return HttpResponseRedirect("/settings/")
+
+        else:
+            return HttpResponseRedirect("/settings/")
+    else:
+        return HttpResponseRedirect("/")
+
+
+def password_changed(request):
+    return render(request, 'WeekChallenge/password_changed.html')
+
+
 def send_pm(request):
     pm_id = request.POST['pm_id']
     pm_title = request.POST['inputTitle']
     pm_content = request.POST['inputContent']
 
-    create_message = Message(user_to = pm_id,
-                             user_from = request.user.id,
-                             title = pm_title,
-                             content = pm_content,
+    create_message = Message(user_to=pm_id,
+                             user_from=request.user.id,
+                             title=pm_title,
+                             content=pm_content,
                              date=timezone.now()
                              )
     create_message.save()
@@ -516,7 +609,7 @@ def friendlist(request, user_id):
 
 # Users stuff
 def create_user(request):
-    if request.user.is_authenticated():
+    if not request.user.is_authenticated():
         username = request.POST['inputUsername']
         email = request.POST['inputEmail']
         password = request.POST['inputPassword']

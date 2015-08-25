@@ -88,16 +88,67 @@ class SearchForm(forms.Form):
                                       required=False,
                                       widget=forms.TextInput(attrs={'class': 'form-control',
                                                                     'placeholder': 'First name'})
-                                      )
+                                     )
     inputLastName = forms.CharField(label='',
                                      max_length=50000,
                                      required=False,
                                      widget=forms.TextInput(attrs={'class': 'form-control',
                                                                    'placeholder': 'Last name'})
-                                     )
+                                    )
     inputEmail = forms.CharField(label='',
                                   max_length=50000,
                                   required=False,
                                   widget=forms.TextInput(attrs={'class': 'form-control',
                                                                 'placeholder': 'Email'})
+                                 )
+
+
+# profile edit forms
+class EditUsernameForm(forms.Form):
+    inputUsername = forms.CharField(label='',
+                                    max_length=50000,
+                                    required=False,
+                                    widget=forms.TextInput(attrs={'class': 'form-control',
+                                                                  'placeholder': 'Username'})
+                                    )
+    inputPassword = forms.CharField(label='',
+                                    required=True,
+                                    widget=forms.PasswordInput(attrs={'class': 'form-control',
+                                                                      'placeholder': 'Password'}))
+
+
+class EditNameForm(forms.Form):
+    inputFirstName = forms.CharField(label='',
+                                     max_length=50000,
+                                     required=False,
+                                     widget=forms.TextInput(attrs={'class': 'form-control',
+                                                                   'placeholder': 'First name'})
                                      )
+
+    inputLastName = forms.CharField(label='',
+                                    max_length=50000,
+                                    required=False,
+                                    widget=forms.TextInput(attrs={'class': 'form-control',
+                                                                  'placeholder': 'Last name'})
+                                    )
+
+
+class EditEmailForm(forms.Form):
+    inputEmail = forms.CharField(label='',
+                                 max_length=50000,
+                                 required=True,
+                                 widget=forms.TextInput(attrs={'class': 'form-control',
+                                                               'placeholder': 'Email'})
+                                 )
+
+
+class EditPasswordForm(forms.Form):
+    inputPassword = forms.CharField(label='',
+                                    widget=forms.PasswordInput(attrs={'class': 'form-control',
+                                                                      'placeholder': 'Old password'}))
+    inputNewPassword = forms.CharField(label='',
+                                       widget=forms.PasswordInput(attrs={'class': 'form-control',
+                                                                         'placeholder': 'New password'}))
+    inputNewPassword2 = forms.CharField(label='',
+                                        widget=forms.PasswordInput(attrs={'class': 'form-control',
+                                                                          'placeholder': 'Repeat new password'}))

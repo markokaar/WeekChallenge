@@ -38,15 +38,15 @@
                 <div class="col-md-4">
                     <form class="form-search" action="/search/" method="POST">
 
-                    {% csrf_token %}
-                    {{ search_form }}
+                        {% csrf_token %}
+                        {{ search_form }}
 
-                    <input class="btn btn-lg btn-primary" type="submit" value="Search">
-                </form>
+                        <input class="btn btn-lg btn-primary" type="submit" value="Search">
+                    </form>
 
                 </div>
                 <div class="col-md-8">
-                    {% if not search_count and search_count != 0%}
+                    {% if not search_count and search_count != 0 %}
                         <div class="alert alert-success" role="alert"><-- Search something first.</div>
                     {% else %}
                         {% if search_count == 0 %}
