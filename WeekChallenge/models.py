@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.contrib.auth.models import User
 
 class Challenge(models.Model):
     title = models.CharField(max_length=150)
@@ -60,3 +60,8 @@ class FriendRequest(models.Model):
 
     def __int__(self):
         return self.user_from
+
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User)
+    bio = models.CharField(max_length=2000000)

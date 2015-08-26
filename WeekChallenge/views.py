@@ -4,7 +4,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.hashers import check_password, make_password
 from django.http import HttpResponseRedirect
 from .forms import LoginForm, RegisterForm, AddForm, MessageForm, SearchForm, EditUsernameForm, \
-    EditNameForm, EditEmailForm, EditPasswordForm
+    EditNameForm, EditEmailForm, EditPasswordForm, EditBioForm
 from .models import Challenge, UserChallenge, UserFriend, Notification, Message, FriendRequest
 from django.utils import timezone
 
@@ -381,15 +381,27 @@ def settings(request):
         e_name_form = EditNameForm()
         e_email_form = EditEmailForm()
         e_password_form = EditPasswordForm()
+        e_bio_form = EditBioForm()
 
         return render(request, 'WeekChallenge/settings.html', {'e_username_form': e_username_form,
                                                                'e_name_form': e_name_form,
                                                                'e_email_form': e_email_form,
                                                                'e_password_form': e_password_form,
+                                                               'e_bio_form': e_bio_form,
                                                                'notifications_count': notifications_count
                                                                })
     else:
         return HttpResponseRedirect("/")
+
+"""
+def upload_image(request):
+    if request.method == "POST":
+        form = DocumentForm(request.POST, request.FILES)
+        if form.is_valid():
+            newdoc = Document(docfile=request.FILES['docfile'])
+            newdoc.save()
+
+    return HttpResponseRedirect("/settings/")"""
 
 
 def edit(request, typee):
@@ -449,6 +461,10 @@ def edit(request, typee):
                 else:
                     print("Something is missing.. Did you insert all 3 passwords?")
                     return HttpResponseRedirect("/settings/")
+            elif typee == 'bio':
+                new_bio = request.GET['inputBio']
+                request.user.userprofile.bio = new_bio
+                request.user.userprofile.save()
 
             else:
                 print("wtf? Something happened..")

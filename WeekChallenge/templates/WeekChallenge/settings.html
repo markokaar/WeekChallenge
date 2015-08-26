@@ -55,6 +55,12 @@
                         <input class="btn btn-sm btn-primary" type="submit" value="Change password">
                     </form>
 
+                    <h4>Edit bio</h4>
+                    <form class="form-settings" action="/edit/bio" method="GET">
+                        {% csrf_token %}
+                        {{ e_bio_form }}
+                        <input class="btn btn-sm btn-primary" type="submit" value="Edit bio">
+                    </form>
 
 
                 </div>
@@ -65,7 +71,7 @@
                         <tr><td>First name</td><td>{{ request.user.first_name }}</td></tr>
                         <tr><td>Last name</td><td>{{ request.user.last_name }}</td></tr>
                         <tr><td>Email</td><td>{{ request.user.email }}</td></tr>
-                        <tr><td>Bio</td><td><small>soon</small></td></tr>
+                        <tr><td>Bio</td><td>{{ request.user.userprofile.bio }}</td></tr>
                     </table>
                 </div>
             </div>

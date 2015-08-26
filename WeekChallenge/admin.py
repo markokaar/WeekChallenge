@@ -1,7 +1,20 @@
 from django.contrib import admin
-from .models import Challenge, UserChallenge, UserFriend, Notification, Message, FriendRequest
+from django.contrib.auth.admin import UserAdmin
+from django.contrib.auth.models import User
+from .models import Challenge, UserChallenge, UserFriend, Notification, Message, FriendRequest, UserProfile
 
 
+class UserProfileInline(admin.StackedInline):
+    model = UserProfile
+    can_delete = False
+    verbose_name_plural = 'Userprofile'
+
+
+class UserAdmin(UserAdmin):
+    inlines = (UserProfileInline, )
+
+admin.site.unregister(User)
+admin.site.register(User, UserAdmin)
 admin.site.register(Challenge)
 admin.site.register(UserChallenge)
 admin.site.register(UserFriend)

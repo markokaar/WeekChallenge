@@ -152,3 +152,12 @@ class EditPasswordForm(forms.Form):
     inputNewPassword2 = forms.CharField(label='',
                                         widget=forms.PasswordInput(attrs={'class': 'form-control',
                                                                           'placeholder': 'Repeat new password'}))
+
+
+class EditBioForm(forms.Form):
+    inputBio = forms.CharField(label='',
+                               max_length=5000,
+                               required=True,
+                               widget=forms.Textarea(attrs={'class': 'form-control',
+                                                            'placeholder': 'Bio'}),
+                               )
