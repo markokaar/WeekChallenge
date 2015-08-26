@@ -18,8 +18,13 @@
     <div class="wrap">
         <div class="container">
             <div class="row">
-                <div class="col-md-12">
+                <div class="col-md-11">
                     <h3>User settings & edit profile</h3>
+                </div>
+                <div class="col-md-1">
+                    <a href="/profile/{{ request.user.username }}">
+                        <button class="btn btn-primary"><span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span> Back</button>
+                    </a>
                 </div>
             </div>
 

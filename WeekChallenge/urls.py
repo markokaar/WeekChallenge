@@ -36,5 +36,6 @@ urlpatterns = [
     url(r'^delete_pm/(?P<pm_id>[0-9]+)/$', views.delete_pm, name='delete_pm'),
     url(r'^settings/$', views.settings, name='settings'),
     url(r'^edit/(?P<typee>[a-zA-Z0-9_.-]+)/$', views.edit, name='edit'),
-    url(r'^password_changed/$', views.password_changed, name='password_changed')
+    url(r'^password_changed/$', views.password_changed, name='password_changed'),
+    url(r'^report/(?P<user_id>[0-9]+)/$', views.report, name='report')
 ]

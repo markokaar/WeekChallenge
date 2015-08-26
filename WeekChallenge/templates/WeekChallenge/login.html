@@ -17,6 +17,18 @@
 
     <div class="wrap">
             <div class="container">
+                {% if error %}
+                    {% if error == 'wrong_name_password' %}
+                        <div class="alert alert-danger" role="alert">
+                            <b>Error!</b> Wrong username and/or password! Please try again.
+                        </div>
+                    {% elif error == 'disabled' %}
+                        <div class="alert alert-danger" role="alert">
+                            <b>Error!</b> This account is disabled!
+                        </div>
+                    {% endif %}
+                {% endif %}
+
                 <form class="form-signin" action="/auth/" method="POST">
                     <h2 class="form-signin-heading">Sign in</h2>
 

@@ -1,8 +1,9 @@
+from django.template import *
 from django.shortcuts import render
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.hashers import check_password, make_password
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse, QueryDict
 from .forms import LoginForm, RegisterForm, AddForm, MessageForm, SearchForm, EditUsernameForm, \
     EditNameForm, EditEmailForm, EditPasswordForm, EditBioForm
 from .models import Challenge, UserChallenge, UserFriend, Notification, Message, FriendRequest
@@ -62,6 +63,7 @@ def contact(request):
 
 def ads(request):
     notification_count(request)
+
     return render(request, 'WeekChallenge/ads.html', {'notifications_count': notifications_count})
 
 
@@ -70,12 +72,26 @@ def donate(request):
     return render(request, 'WeekChallenge/donate.html', {'notifications_count': notifications_count})
 
 
+def report(request, user_id):
+    return render(request, 'WeekChallenge/report.html')
+
+
 def add(request):
     if request.user.is_authenticated():
         notification_count(request)
         add_form = AddForm()
-        return render(request, 'WeekChallenge/add.html', {'add_form': add_form,
-                                                          'notifications_count': notifications_count})
+
+        if request.COOKIES.get('alert') == 'challenge_submitted':
+            context = {'add_form': add_form,
+                       'notifications_count': notifications_count,
+                       'alert': request.COOKIES.get('alert')}
+        else:
+            context = {'add_form': add_form,
+                       'notifications_count': notifications_count}
+
+        response = render(request, 'WeekChallenge/add.html', context)
+        response.delete_cookie('alert')
+        return response
     else:
         return HttpResponseRedirect("/")
 
@@ -167,7 +183,8 @@ def add_friend(request, friend_id):
                                        date=timezone.now())
         friend_request.save()
 
-        return HttpResponseRedirect("/")
+        select_friend = User.objects.get(id=friend_id)
+        return HttpResponseRedirect("/profile/" + select_friend.username)
     else:
         return HttpResponseRedirect("/")
 
@@ -310,7 +327,9 @@ def add_challenge(request):
                       user_id=request.user.id)
         c.save()
 
-        return HttpResponseRedirect("/add/")
+        response = HttpResponseRedirect("/add/")
+        response.set_cookie('alert', 'challenge_submitted')
+        return response
     else:
         return HttpResponseRedirect("/")
 
@@ -325,7 +344,18 @@ def log_in(request):
         return HttpResponseRedirect("/")
     else:
         log_form = LoginForm()
-        return render(request, 'WeekChallenge/login.html', {'form': log_form})
+
+        if request.COOKIES.get('error_name') == "wrong_name_password":
+            context = {'form': log_form, 'error': request.COOKIES.get('error_name')}
+        elif request.COOKIES.get('error_name') == "disabled":
+            context = {'form': log_form, 'error': request.COOKIES.get('error_name')}
+        else:
+            context = {'form': log_form}
+
+        response = render(request, 'WeekChallenge/login.html', context)
+        response.delete_cookie('error_name')
+
+        return response
 
 
 def profile(request, user_name):
@@ -341,6 +371,7 @@ def profile(request, user_name):
         else:
             no_accepted = False
 
+        # Check if already friends
         already_friends = False
         check_friendship = UserFriend.objects.filter(user_id=request.user.id)
         if check_friendship:
@@ -353,6 +384,14 @@ def profile(request, user_name):
             if user_name2.id in userlist:
                 already_friends = True
 
+        # Check if request sent.
+        request_sent = False
+        check_request = FriendRequest.objects.filter(user_from=request.user.id, user_to=user_name2.id)
+        if check_request:
+            request_sent = True
+        else:
+            request_sent = False
+
         # IF profile belongs to logged user
         its_you = False
         if request.user.username == user_name:
@@ -361,15 +400,34 @@ def profile(request, user_name):
         # Private message stuff
         message_form = MessageForm()
 
-        return render(request, 'WeekChallenge/profile.html', {'user_name': user_name2,
-                                                              'ch': ch,
-                                                              'challenges': challenges,
-                                                              'no_accepted': no_accepted,
-                                                              'notifications_count': notifications_count,
-                                                              'message_form': message_form,
-                                                              'already_friends': already_friends,
-                                                              'its_you': its_you
-                                                              })
+        if request.COOKIES.get('alert'):
+            context = {'user_name': user_name2,
+                       'ch': ch,
+                       'challenges': challenges,
+                       'no_accepted': no_accepted,
+                       'notifications_count': notifications_count,
+                       'message_form': message_form,
+                       'already_friends': already_friends,
+                       'its_you': its_you,
+                       'request_sent': request_sent,
+                       'alert': request.COOKIES.get('alert')
+                       }
+        else:
+            context = {'user_name': user_name2,
+                       'ch': ch,
+                       'challenges': challenges,
+                       'no_accepted': no_accepted,
+                       'notifications_count': notifications_count,
+                       'message_form': message_form,
+                       'already_friends': already_friends,
+                       'its_you': its_you,
+                       'request_sent': request_sent,
+                       }
+
+        response = render(request, 'WeekChallenge/profile.html', context)
+        response.delete_cookie('alert')
+
+        return response
     else:
         return HttpResponseRedirect("/")
 
@@ -478,30 +536,42 @@ def edit(request, typee):
 
 
 def password_changed(request):
-    return render(request, 'WeekChallenge/password_changed.html')
+    if request.user.is_authenticated():
+        return render(request, 'WeekChallenge/password_changed.html')
+    else:
+        return HttpResponseRedirect("/")
 
 
 def send_pm(request):
-    pm_id = request.POST['pm_id']
-    pm_title = request.POST['inputTitle']
-    pm_content = request.POST['inputContent']
+    if request.user.is_authenticated():
+        pm_id = request.POST['pm_id']
+        pm_title = request.POST['inputTitle']
+        pm_content = request.POST['inputContent']
 
-    create_message = Message(user_to=pm_id,
-                             user_from=request.user.id,
-                             title=pm_title,
-                             content=pm_content,
-                             date=timezone.now()
-                             )
-    create_message.save()
+        pm_username = User.objects.get(id=pm_id)
 
-    return HttpResponseRedirect("/")
+        create_message = Message(user_to=pm_id,
+                                 user_from=request.user.id,
+                                 title=pm_title,
+                                 content=pm_content,
+                                 date=timezone.now()
+                                 )
+        create_message.save()
+        response = HttpResponseRedirect("/profile/" + pm_username.username)
+        response.set_cookie('alert', 'message_sent')
+        return response
+    else:
+        return HttpResponseRedirect("/")
 
 
 def delete_pm(request, pm_id):
-    select_pm = Message.objects.get(id=pm_id, user_to=request.user.id)
-    select_pm.delete()
+    if request.user.is_authenticated():
+        select_pm = Message.objects.get(id=pm_id, user_to=request.user.id)
+        select_pm.delete()
 
-    return HttpResponseRedirect("/notifications/")
+        return HttpResponseRedirect("/notifications/")
+    else:
+        return HttpResponseRedirect("/")
 
 
 def user_accept_challenge(request):
@@ -601,6 +671,7 @@ def friendlist(request, user_id):
     if request.user.is_authenticated():
         notification_count(request)
         select_friendlist = UserFriend.objects.filter(user_id=user_id)
+        user_name = User.objects.get(id=user_id)
 
         if select_friendlist:
             select_friendlist = UserFriend.objects.get(user_id=user_id)
@@ -616,9 +687,12 @@ def friendlist(request, user_id):
 
             return render(request, 'WeekChallenge/friendlist.html', {'friendlist': select_friendlist,
                                                                      'find_friends': find_friends,
-                                                                     'notifications_count': notifications_count})
+                                                                     'notifications_count': notifications_count,
+                                                                     'user_name': user_name
+                                                                     })
         else:
-            return render(request, 'WeekChallenge/friendlist.html', {'notifications_count': notifications_count})
+            return render(request, 'WeekChallenge/friendlist.html', {'notifications_count': notifications_count,
+                                                                     'user_name': user_name})
     else:
         return HttpResponseRedirect("/")
 
@@ -670,10 +744,14 @@ def auth(request):
                 return HttpResponseRedirect("/")
             else:
                 # print("auth: Disabled account!")
-                return HttpResponseRedirect("/")
+                response = HttpResponseRedirect("/log_in/")
+                response.set_cookie('error_name', 'disabled')
+                return response
         else:
             # print("auth: Wrong username and/or password!")
-            return HttpResponseRedirect("/log_in/")
+            response = HttpResponseRedirect("/log_in/")
+            response.set_cookie('error_name', 'wrong_name_password')
+            return response
 
 
 def log_out(request):
