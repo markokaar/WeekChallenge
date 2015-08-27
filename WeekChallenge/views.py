@@ -8,6 +8,8 @@ from .forms import LoginForm, RegisterForm, AddForm, MessageForm, SearchForm, Ed
     EditNameForm, EditEmailForm, EditPasswordForm, EditBioForm
 from .models import Challenge, UserChallenge, UserFriend, Notification, Message, FriendRequest
 from django.utils import timezone
+from django.core.exceptions import ValidationError
+from django.core.validators import validate_email
 
 notifications_count = 0
 
@@ -336,7 +338,15 @@ def add_challenge(request):
 
 def register(request):
     reg_form = RegisterForm()
-    return render(request, 'WeekChallenge/register.html', {'form': reg_form})
+
+    if request.COOKIES.get('alert'):
+        context = {'form': reg_form, 'alert': request.COOKIES.get('alert')}
+    else:
+        context = {'form': reg_form}
+
+    response = render(request, 'WeekChallenge/register.html', context)
+    response.delete_cookie('alert')
+    return response
 
 
 def log_in(request):
@@ -703,28 +713,65 @@ def create_user(request):
         username = request.POST['inputUsername']
         email = request.POST['inputEmail']
         password = request.POST['inputPassword']
+        password2 = request.POST['inputPassword2']
         firstname = request.POST['inputFirstName']
         lastname = request.POST['inputLastName']
 
-        user = User.objects.create_user(username, email, password)
-        user.first_name = firstname
-        user.last_name = lastname
-        user.save()
+        response = HttpResponseRedirect("/register/")
 
-        # Loging in
-        user = authenticate(username=username, password=password)
-        if user is not None:
-            if user.is_active:
-                login(request, user)
+        # Checking if everything is OK for creating user
+        if not User.objects.filter(username=username):
+            if len(username) > 3:
+                if len(username) < 30:
+                    try:
+                        validate_email(email)
+                    except ValidationError as e:
+                        # print("Email not valid")
+                        response.set_cookie('alert', 'email_not_valid')
+                    else:
+                        if len(password) > 5:
+                            if len(password) < 50:
+                                if password == password2:
+                                    # Create user
+                                    user = User.objects.create_user(username, email, password)
+                                    user.first_name = firstname
+                                    user.last_name = lastname
+                                    user.save()
 
-                # print("auth: Success! Logged in!")
-                return HttpResponseRedirect("/")
+                                    # Loging in
+                                    user = authenticate(username=username, password=password)
+                                    if user is not None:
+                                        if user.is_active:
+                                            login(request, user)
+
+                                            # print("auth: Success! Logged in! Something went wrong..")
+                                            return HttpResponseRedirect("/")
+                                        else:
+                                            # print("auth: Disabled account! Something went wrong")
+                                            return HttpResponseRedirect("/")
+                                    else:
+                                        # print("auth: Wrong username and/or password! -Something went really wrong..")
+                                        return HttpResponseRedirect("/log_in/")
+                                else:
+                                    # print("passwords does not match.")
+                                    response.set_cookie('alert', 'pw_not_matching')
+                            else:
+                                # print("Passwoord too long. more than 50 char")
+                                response.set_cookie('alert', 'pw_long')
+                        else:
+                            # print("Password shorter than 5 characters")
+                            response.set_cookie('alert', 'pw_short')
+                else:
+                    # print("Username too long. More than 30 char.")
+                    response.set_cookie('alert', 'username_long')
             else:
-                # print("auth: Disabled account!")
-                return HttpResponseRedirect("/")
+                # print("username less than 3 characters")
+                response.set_cookie('alert', 'username_short')
         else:
-            # print("auth: Wrong username and/or password!")
-            return HttpResponseRedirect("/log_in/")
+            # print("Username already in use")
+            response.set_cookie('alert', 'username_in_use')
+
+        return response
     else:
         return HttpResponseRedirect("/")
 

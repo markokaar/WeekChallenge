@@ -17,6 +17,39 @@
 
     <div class="wrap">
         <div class="container">
+
+            {% if alert %}
+                {% if alert == 'username_in_use' %}
+                    <div class="alert alert-danger" role="alert">
+                        <b>Error!</b> Username is already in use!
+                    </div>
+                {% elif alert == 'username_short' %}
+                    <div class="alert alert-danger" role="alert">
+                        <b>Error!</b> Username is too short. Minimum 3 characters!
+                    </div>
+                {% elif alert == 'username_long' %}
+                    <div class="alert alert-danger" role="alert">
+                        <b>Error!</b> Username is too long. Maximum 30 characters!
+                    </div>
+                {% elif alert == 'email_not_valid' %}
+                    <div class="alert alert-danger" role="alert">
+                        <b>Error!</b> Email is not valid.
+                    </div>
+                {% elif alert == 'pw_short' %}
+                    <div class="alert alert-danger" role="alert">
+                        <b>Error!</b> Password is too short. Minimum 5 characters!
+                    </div>
+                {% elif alert == 'pw_long' %}
+                    <div class="alert alert-danger" role="alert">
+                        <b>Error!</b> Take it easy.. Pick a shorter password than 50 characters.
+                    </div>
+                {% elif alert == 'pw_not_matching' %}
+                    <div class="alert alert-danger" role="alert">
+                        <b>Error!</b> Passwords does not match!
+                    </div>
+                {% endif %}
+            {% endif %}
+
             <form class="form-register" action="/create_user/" method="POST">
                 <h2 class="form-register-heading">Register</h2>
 

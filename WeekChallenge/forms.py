@@ -33,7 +33,7 @@ class RegisterForm(forms.Form):
                                                                   'placeholder': 'Last name (optional)'})
                                      )
     inputEmail = forms.EmailField(label='',
-                                  max_length=50,
+                                  max_length=255,
                                   required=True,
                                   widget=forms.TextInput(attrs={'class': 'form-control',
                                                                 'placeholder': 'Email'})
