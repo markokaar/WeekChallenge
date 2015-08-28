@@ -3,7 +3,7 @@ from django.shortcuts import render
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.hashers import check_password, make_password
-from django.http import HttpResponseRedirect, HttpResponse, QueryDict
+from django.http import HttpResponseRedirect, HttpResponse
 from .forms import LoginForm, RegisterForm, AddForm, MessageForm, SearchForm, EditUsernameForm, \
     EditNameForm, EditEmailForm, EditPasswordForm, EditBioForm
 from .models import Challenge, UserChallenge, UserFriend, Notification, Message, FriendRequest

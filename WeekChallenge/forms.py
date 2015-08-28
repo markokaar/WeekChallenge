@@ -72,7 +72,7 @@ class MessageForm(forms.Form):
                                    max_length=2000000000,
                                    required=True,
                                    widget=forms.Textarea(attrs={'class': 'form-control',
-                                                                'placeholder': 'Message'})
+                                                                'placeholder': 'Message', 'rows': '5'})
                                    )
 
 
