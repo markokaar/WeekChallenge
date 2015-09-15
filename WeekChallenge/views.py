@@ -41,6 +41,7 @@ def index(request):
     select_challenge = Challenge.objects.get(state=2)
     chid = select_challenge.id
 
+    # asd
     # Active challenge accepting check
     if UserChallenge.objects.filter(challenge_id=chid, user_id=request.user.id):
         is_accepted = True
